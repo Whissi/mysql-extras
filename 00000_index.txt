@@ -282,7 +282,12 @@
 @@ Take libmysqld to be a proper shared library.
 
 @patch 02040_all_embedded-library-shared-maria-5.1.50.patch
-@ver 5.01.50.00 to 5.2.3.99
+@ver 5.01.50.00 to 5.1.99.99
+@pn mariadb
+@@ Take libmysqld to be a proper shared library.
+
+@patch 02040_all_embedded-library-shared-maria-5.2.03.patch
+@ver 5.02.03.00 to 5.02.03.99
 @pn mariadb
 @@ Take libmysqld to be a proper shared library.
 
