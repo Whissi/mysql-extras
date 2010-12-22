@@ -613,6 +613,20 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 +test_thr_mutex$(EXEEXT): test_thr_mutex.c $(LTLIBRARIES)
  	$(LINK) $(FLAGS) $(srcdir)/test_thr_mutex.c $(LDADD) $(LIBS)
 
+=== modified file 'netware/Makefile.am'
+--- netware/Makefile.am	2010-08-27 14:12:44 +0000
++++ netware/Makefile.am	2010-09-16 12:49:35 +0000
+@@ -16,8 +16,8 @@
+ 
+ if HAVE_NETWARE
+ INCLUDES =			-I$(top_builddir)/include -I$(top_srcdir)/include -I..
+-LDADD =				@CLIENT_EXTRA_LDFLAGS@ ../mysys/libmysys.a \
+-				../dbug/libdbug.a ../strings/libmystrings.a
++LDADD =				@CLIENT_EXTRA_LDFLAGS@ ../mysys/libmysys.la \
++				../dbug/libdbug.la ../strings/libmystrings.la @ZLIB_LIBS@
+ bin_PROGRAMS =			mysqld_safe mysql_install_db mysql_test_run libmysql
+ mysqld_safe_SOURCES=		mysqld_safe.c my_manage.c
+ mysql_install_db_SOURCES=	mysql_install_db.c my_manage.c
 === modified file 'regex/Makefile.am'
 --- regex/Makefile.am	2010-08-27 14:12:44 +0000
 +++ regex/Makefile.am	2010-09-16 12:49:35 +0000
