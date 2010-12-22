@@ -1511,7 +1511,7 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 === modified file 'storage/ndb/src/kernel/Makefile.am'
 --- storage/ndb/src/kernel/Makefile.am	2006-12-31 00:32:21 +0000
 +++ storage/ndb/src/kernel/Makefile.am	2010-09-16 12:49:35 +0000
-@@ -53,9 +53,9 @@
+@@ -53,9 +53,10 @@
                $(top_builddir)/storage/ndb/src/mgmapi/libmgmapi.la \
                $(top_builddir)/storage/ndb/src/common/portlib/libportlib.la      \
                $(top_builddir)/storage/ndb/src/common/util/libgeneral.la  \
@@ -1520,7 +1520,8 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 -         $(top_builddir)/strings/libmystrings.a @NDB_SCI_LIBS@
 +         $(top_builddir)/dbug/libdbug.la \
 +         $(top_builddir)/mysys/libmysys.la \
-+         $(top_builddir)/strings/libmystrings.la @NDB_SCI_LIBS@ @ZLIB_LIBS@
++         $(top_builddir)/strings/libmystrings.la @NDB_SCI_LIBS@ \
++         @ZLIB_LIBS@
  
  windoze-dsp: ndbd.dsp
  
@@ -1713,7 +1714,7 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 === modified file 'storage/ndb/src/ndbapi/Makefile.am'
 --- storage/ndb/src/ndbapi/Makefile.am	2007-04-11 13:51:09 +0000
 +++ storage/ndb/src/ndbapi/Makefile.am	2010-09-16 12:49:35 +0000
-@@ -66,10 +66,10 @@
+@@ -66,10 +66,11 @@
  include $(top_srcdir)/storage/ndb/config/common.mk.am
  include $(top_srcdir)/storage/ndb/config/type_ndbapi.mk.am
  
@@ -1724,7 +1725,8 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 +ndberror_check_LDADD = \
 +         $(top_builddir)/dbug/libdbug.la \
 +         $(top_builddir)/mysys/libmysys.la \
-+         $(top_builddir)/strings/libmystrings.la @ZLIB_LIBS@
++         $(top_builddir)/strings/libmystrings.la \
++         @ZLIB_LIBS@
  
  # Don't update the files from bitkeeper
  %::SCCS/s.%
@@ -1746,6 +1748,21 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
  atrt_CXXFLAGS = -I$(top_srcdir)/ndb/src/mgmapi \
                        -I$(top_srcdir)/ndb/src/mgmsrv \
 
+=== modified file 'storage/ndb/tools/Makefile.am'
+--- storage/ndb/tools/Makefile.am	2009-10-13 18:21:42 +0000
++++ storage/ndb/tools/Makefile.am	2010-09-16 12:49:35 +0000
+@@ -32,6 +32,11 @@
+                        ../test/src/NDBT_Table.cpp \
+                        ../test/src/NDBT_Output.cpp
+ 
++LDADD =		$(top_builddir)/mysys/libmysys.la \
++			$(top_builddir)/strings/libmystrings.la \
++			$(top_builddir)/dbug/libdbug.la \
++			@ZLIB_LIBS@
++
+ ndb_test_platform_SOURCES = ndb_test_platform.cpp
+ ndb_waiter_SOURCES = waiter.cpp $(tools_common_sources)
+ ndb_delete_all_SOURCES = delete_all.cpp $(tools_common_sources)
 === modified file 'storage/pbxt/plug.in'
 --- storage/pbxt/plug.in	2009-12-09 21:39:23 +0000
 +++ storage/pbxt/plug.in	2010-09-16 12:49:35 +0000
