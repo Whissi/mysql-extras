@@ -1520,7 +1520,7 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 -         $(top_builddir)/strings/libmystrings.a @NDB_SCI_LIBS@
 +         $(top_builddir)/dbug/libdbug.la \
 +         $(top_builddir)/mysys/libmysys.la \
-+         $(top_builddir)/strings/libmystrings.la @NDB_SCI_LIBS@
++         $(top_builddir)/strings/libmystrings.la @NDB_SCI_LIBS@ @ZLIB_LIBS@
  
  windoze-dsp: ndbd.dsp
  
