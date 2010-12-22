@@ -1713,16 +1713,17 @@ Signed-off-by: Kristian Nielsen <knielsen@knielsen-hq.org>
 === modified file 'storage/ndb/src/ndbapi/Makefile.am'
 --- storage/ndb/src/ndbapi/Makefile.am	2007-04-11 13:51:09 +0000
 +++ storage/ndb/src/ndbapi/Makefile.am	2010-09-16 12:49:35 +0000
-@@ -67,9 +67,9 @@
+@@ -67,10 +67,10 @@
  include $(top_srcdir)/storage/ndb/config/type_ndbapi.mk.am
  
- ndberror_check_LDFLAGS = \
+- ndberror_check_LDFLAGS = \
 -         $(top_builddir)/dbug/libdbug.a \
 -         $(top_builddir)/mysys/libmysys.a \
 -         $(top_builddir)/strings/libmystrings.a
++ ndberror_check_LDADD = \
 +         $(top_builddir)/dbug/libdbug.la \
 +         $(top_builddir)/mysys/libmysys.la \
-+         $(top_builddir)/strings/libmystrings.la
++         $(top_builddir)/strings/libmystrings.la @ZLIB_LIBS@
  
  # Don't update the files from bitkeeper
  %::SCCS/s.%
