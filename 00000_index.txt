@@ -659,7 +659,12 @@
 @@ Bug #308999: Fix false positives with between OK/"Table is already up to date" output
 
 @patch 07300_all_mysql_embedded_compilefix-5.0.91.patch
-@ver 5.00.91.00 to 5.00.99.99
+@ver 5.00.91.00 to 5.00.91.99
+@pn mysql
+@@ Compile fix for bug introduced by upstream in 5.0.91
+
+@patch 07300_all_mysql_embedded_compilefix-5.0.92.patch
+@ver 5.00.92.00 to 5.00.99.99
 @pn mysql
 @@ Compile fix for bug introduced by upstream in 5.0.91
 
