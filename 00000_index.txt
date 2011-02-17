@@ -752,9 +752,14 @@
 @@ Percona 5.0.87-b20-20091116:  Extended statistics in slow.log
 
 @patch 10020_all_microslow_innodb-percona-5.0.91-b22-20100522.patch
-@ver 5.00.91.00 to 5.00.99.99
+@ver 5.00.91.00 to 5.00.91.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Extended statistics in slow.log
+
+@patch 10020_all_microslow_innodb-percona-5.0.92.patch
+@ver 5.00.92.00 to 5.00.99.99
+@pn mysql
+@@ Percona 5.0.92:  Extended statistics in slow.log
 
 @patch 10021_all_profiling_slow-percona-5.0.83-b17-20090706.patch
 @ver 5.00.83.00 to 5.00.83.99
@@ -772,14 +777,9 @@
 @@ Percona 5.0.87-b20-20091116:  profiling from SHOW PROFILE to slow.log
 
 @patch 10021_all_profiling_slow-percona-5.0.91-b22-20100522.patch
-@ver 5.00.91.00 to 5.00.91.99
+@ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  profiling from SHOW PROFILE to slow.log
-
-@patch 10021_all_profiling_slow-percona-5.0.92.patch
-@ver 5.00.92.00 to 5.00.99.99
-@pn mysql
-@@ Percona 5.0.92:  profiling from SHOW PROFILE to slow.log
 
 @patch 10030_all_userstatv2-percona-5.0.75-b12.patch
 @ver 5.00.75.00 to 5.00.76.99
