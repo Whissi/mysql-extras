@@ -3942,11 +3942,11 @@ diff -r 592f6c3641ba sql/sql_show.cc
    Description of ST_FIELD_INFO in table.h
 @@ -4509,6 +4875,8 @@
  {
-   {"CHARACTER_SETS", charsets_fields_info, create_schema_table, 
+   {"CHARACTER_SETS", charsets_fields_info, create_schema_table,
     fill_schema_charsets, make_character_sets_old_format, 0, -1, -1, 0},
 +  {"CLIENT_STATISTICS", client_stats_fields_info, create_schema_table, 
 +    fill_schema_client_stats, make_old_format, 0, -1, -1, 0},
-   {"COLLATIONS", collation_fields_info, create_schema_table, 
+   {"COLLATIONS", collation_fields_info, create_schema_table,
     fill_schema_collation, make_old_format, 0, -1, -1, 0},
    {"COLLATION_CHARACTER_SET_APPLICABILITY", coll_charset_app_fields_info,
 @@ -4517,6 +4885,8 @@
@@ -3969,13 +3969,13 @@ diff -r 592f6c3641ba sql/sql_show.cc
    {"TABLE_PRIVILEGES", table_privileges_fields_info, create_schema_table,
 @@ -4550,6 +4920,8 @@
     get_all_tables, make_old_format, get_schema_triggers_record, 5, 6, 0},
-   {"USER_PRIVILEGES", user_privileges_fields_info, create_schema_table, 
+   {"USER_PRIVILEGES", user_privileges_fields_info, create_schema_table,
      fill_schema_user_privileges, 0, 0, -1, -1, 0},
 +  {"USER_STATISTICS", user_stats_fields_info, create_schema_table, 
 +    fill_schema_user_stats, make_old_format, 0, -1, -1, 0},
    {"VARIABLES", variables_fields_info, create_schema_table, fill_variables,
     make_old_format, 0, -1, -1, 1},
-   {"VIEWS", view_fields_info, create_schema_table, 
+   {"VIEWS", view_fields_info, create_schema_table,
 diff -r 592f6c3641ba sql/sql_update.cc
 --- a/sql/sql_update.cc	Wed Jul 29 13:33:34 2009 -0700
 +++ b/sql/sql_update.cc	Wed Jul 29 13:34:11 2009 -0700
