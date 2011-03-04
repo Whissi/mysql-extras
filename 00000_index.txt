@@ -698,7 +698,12 @@
 @@ Gentoo Bug #344031: Fix new TEXTRELs
 
 @patch 07341_all_mariadb_hardened_x86_strings.patch
-@ver 5.01.51.00 to 5.01.99.99
+@ver 5.01.51.00 to 5.01.54.99
+@pn mariadb
+@@ Gentoo Bug #344031: Fix new TEXTRELs
+
+@patch 07341_all_mariadb_5.1.55_hardened_x86_strings.patch
+@ver 5.01.55.00 to 5.01.99.99
 @pn mariadb
 @@ Gentoo Bug #344031: Fix new TEXTRELs
 
