@@ -685,7 +685,7 @@
 @@ my_compiler.h is not installed, but is required.
 
 @patch 07330_all_mysql_itemfunc_stacksize_bug57386.patch
-@ver 5.01.50.00 to 5.01.99.99
+@ver 5.01.50.00 to 5.01.55.99
 @pn mysql
 @pn maria
 @pn mysql-cluster
