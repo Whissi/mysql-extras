@@ -1,0 +1,35 @@
+Update Test::Harness usage for Test-Harness-3*
+
+Test-Harness-2 and older directly executed testcases that did not end in .t.
+In version 3, this is no longer the case, and Test::Harness is now a thin
+wrapper around TAP::Harness. To make the testcases work again, we introduce a
+subclass of TAP::Harness, that allows direct execution where needed.
+
+Signed-off-by: Robin H. Johnson <robbat2@gentoo.org>
+
+--- mysql/unittest/unit.pl.orig	2011-04-17 18:12:47.104981268 +0000
++++ mysql/unittest/unit.pl	2011-04-17 19:05:46.520096987 +0000
+@@ -93,7 +93,23 @@
+         # Removing the first './' from the file names
+         foreach (@files) { s!^\./!! }
+         $ENV{'HARNESS_PERL_SWITCHES'} .= q" -e 'exec @ARGV'";
++        $ENV{'HARNESS_SUBCLASS'} = qw(TAP::Harness::Exec);
+         runtests @files;
+     }
+ }
+ 
++package TAP::Harness::Exec;
++use base qw(TAP::Harness);
++sub new {
++    my ($class, $arg_for ) = @_;
++    $arg_for ||= {};
++    $arg_for->{exec} = sub {
++        my ( $harness, $test_file ) = @_;
++        return undef if $test_file =~ /[.]t$/;
++        return [ $test_file ] if -x $test_file;
++        # This is a failure now
++        return undef;
++    };
++    return $class->SUPER::new( $arg_for );
++}
++1;

@@ -1331,3 +1331,8 @@
 @ver 5.01.53.00 to 5.01.99.99
 @pn mysql
 @@ Fix for the hardcoded /lib paths.
+
+@patch 15030_all_fix_perl_test_harness.patch
+@ver 5.01.53.00 to 5.01.99.99
+@pn mysql
+@@ Fix Test::Harness usage since the Perl class has changed and no longer execs by default.
