@@ -1,3 +1,14 @@
+Multilib: Remove hardcoded lib where lib might be lib32, and lib64 is correct.
+
+On a variety of multilib systems, /lib might not exist, or might contain
+(directly or via a symlink) 32-bit library content. If the objective is to
+build a 64-bit MySQL, we need to explicitly tell mysql how to look for external
+libraries. We add an option --with-LIBDIR that takes the basename for the
+library directory to resolve this problem.
+
+Signed-off-by: Jorge Manuel B. S. Vicetto <jmbsvicetto@gentoo.org>
+Signed-off-by: Robin H. Johnson <robbat2@gentoo.org>
+
 diff -urN mysql-orig//config/ac-macros/ha_ndbcluster.m4 mysql/config/ac-macros/ha_ndbcluster.m4
 --- mysql-orig//config/ac-macros/ha_ndbcluster.m4	2011-04-17 02:29:26.660000016 +0000
 +++ mysql/config/ac-macros/ha_ndbcluster.m4	2011-04-17 02:33:40.293333350 +0000
