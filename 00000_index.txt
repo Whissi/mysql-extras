@@ -1326,3 +1326,8 @@
 @ver 5.00.87.00 to 5.00.99.99
 @pn mysql
 @@ Fixup of crash caused by Percona code + compile fix for strchr input type.
+
+@patch 15020_all_fix_hardcoded_lib_paths.patch
+@ver 5.01.53.00 to 5.01.99.99
+@pn mysql
+@@ Fix for the hardcoded /lib paths.
