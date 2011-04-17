@@ -695,18 +695,24 @@
 @ver 5.01.51.00 to 5.01.99.99
 @pn mysql
 @pn mysql-cluster
+@@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
+
+@patch 07341_all_mysql_hardened_x86_strings.patch
+@ver 5.01.51.00 to 5.01.55.99
+@pn mysql
+@pn mysql-cluster
+@@ Gentoo Bug #344031: Fix new TEXTRELs
+
+@patch 07341_all_mysql-5.1.56_hardened_x86_strings.patch
+@ver 5.01.56.00 to 5.01.99.99
+@pn mysql
+@pn mysql-cluster
 @@ Gentoo Bug #344031: Fix new TEXTRELs
 
 @patch 07340_all_mariadb_hardened_x86_strings.patch
 @ver 5.01.51.00 to 5.01.99.99
 @pn mariadb
-@@ Gentoo Bug #344031: Fix new TEXTRELs
-
-@patch 07341_all_mysql_hardened_x86_strings.patch
-@ver 5.01.51.00 to 5.01.99.99
-@pn mysql
-@pn mysql-cluster
-@@ Gentoo Bug #344031: Fix new TEXTRELs
+@@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
 
 @patch 07341_all_mariadb_hardened_x86_strings.patch
 @ver 5.01.51.00 to 5.01.54.99

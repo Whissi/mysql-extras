@@ -1,10 +1,6 @@
-2010-11-10	Magnus Granberg <zorry@gento.org>, Francisco Blas Izquierdo Riera <franxisco1988@mixmail.com>
-
-		#344031
-		* configure.in: 			Rename strings-x86.s to strings-x86.S
-		* strings/Makefile.am		Likewise.
-		* strings/Makefile.in		Likewise.
-		* strings/strings-x86.S	Copy of strings-x86.s to support -fPIC
+As part of fixing the TEXTRELs, we must remove this file seperately because
+applying a move of .s -> .S on a case-insensitive file-system will cause patch
+to break.
 
 diff -urN a/strings/strings-x86.s b/strings/strings-x86.s
 --- a/strings/strings-x86.s	2010-11-09 21:29:32.192000076 +0100
