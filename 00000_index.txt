@@ -296,7 +296,7 @@
 @@ Take libmysqld to be a proper shared library.
 
 @patch 02040_all_embedded-library-shared-5.5.10.patch
-@ver 5.05.10.00 to 5.05.99.99
+@ver 5.05.10.00 to 5.06.99.99
 @pn mysql
 @@ Take libmysqld to be a proper shared library.
 
