@@ -2942,7 +2942,7 @@ diff -urN mysql-orig/storage/myisam/mi_check.c mysql/storage/myisam/mi_check.c
          */
          sort_info.max_records= 10 *
 -                               max(param->sort_buffer_length, MIN_SORT_BUFFER) /
-+                               MYSQL_MAXparam->sort_buffer_length, MIN_SORT_BUFFER) /
++                               MYSQL_MAX(param->sort_buffer_length, MIN_SORT_BUFFER) /
                                 sort_param.key_length;
        }
  
@@ -2960,7 +2960,7 @@ diff -urN mysql-orig/storage/myisam/mi_check.c mysql/storage/myisam/mi_check.c
    /*
      32 is just a safety margin here
 -    (at least max(val_len, sizeof(nod_flag)) should be there).
-+    (at least MYSQL_MAXval_len, sizeof(nod_flag)) should be there).
++    (at least MYSQL_MAX(val_len, sizeof(nod_flag)) should be there).
      May be better performance could be achieved if we'd put
        (sort_info->keyinfo->block_length-32)/XXX
        instead.
