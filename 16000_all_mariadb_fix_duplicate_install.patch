@@ -1,0 +1,11 @@
+--- mariadb-5.2.7/support-files/Makefile.am	
++++ mariadb-5.2.7/support-files/Makefile.am	
+@@ -48,8 +48,6 @@ pkgsupp_DATA =		my-small.cnf \
+                         config.medium.ini \
+                         config.small.ini \
+ 			my-innodb-heavy-4G.cnf \
+-			mysql-log-rotate \
+-			binary-configure \
+ 			ndb-config-2-node.ini
+ 
+ pkgsupp_SCRIPTS =	mysql.server \
