@@ -1364,7 +1364,7 @@
 @pn mysql
 @@ Fix Test::Harness usage since the Perl class has changed and no longer execs by default.
 
-@patch 1600_all_mariadb_fix_duplicate_install.patch
+@patch 16000_all_mariadb_fix_duplicate_install.patch
 @ver 5.02.07.00 to 5.03.99.99
 @pn mariadb
 @@ Fix duplicate entries for files on support-files/Makefile.am
