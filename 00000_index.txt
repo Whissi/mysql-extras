@@ -883,9 +883,14 @@
 @@ Percona 5.0.91-b22-20100522:  SHOW USER/TABLE/INDEX statistics
 
 @patch 10030_all_userstatv2-percona-5.0.92.patch
-@ver 5.00.92.00 to 5.00.99.99
+@ver 5.00.92.00 to 5.00.95.99
 @pn mysql
 @@ Percona 5.0.92:  SHOW USER/TABLE/INDEX statistics
+
+@patch 10030_all_userstatv2-percona-5.0.96.patch
+@ver 5.00.96.00 to 5.00.99.99
+@pn mysql
+@@ Percona 5.0.96:  SHOW USER/TABLE/INDEX statistics (Gentoo forward-port)
 
 @patch 10040_all_microsec_process-percona-5.0.75-b12.patch
 @ver 5.00.75.00 to 5.00.76.99
