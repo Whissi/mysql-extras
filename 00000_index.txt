@@ -767,6 +767,16 @@
 @pn mariadb
 @@ Gentoo Bug #344031: Fix new TEXTRELs
 
+@patch 07342_all_mysql_auth_bypass-5.1.62.patch
+@ver 5.01.62.00 to 5.01.62.99
+@pn mysql
+@@ Upstream bug #64884: auth bypass
+
+@patch 07342_all_mysql_auth_bypass-5.5.22.patch
+@ver 5.05.22.00 to 5.05.22.99
+@pn mysql
+@@ Upstream bug #64884: auth bypass
+
 @patch 10010_all_show_patches-percona-5.0.75-b12.patch
 @ver 5.00.75.00 to 5.00.76.99
 @pn mysql-community
