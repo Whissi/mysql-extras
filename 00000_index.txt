@@ -1410,3 +1410,8 @@
 @ver 5.02.07.00 to 5.03.99.99
 @pn mariadb
 @@ Fix duplicate entries for files on support-files/Makefile.am
+
+@patch 20000_all_mariadb_fix_tests.patch
+@ver 5.01.00.00 to 5.03.99.99
+@pn mariadb
+@@ Fix bad index in the ma_test2 unit test binary

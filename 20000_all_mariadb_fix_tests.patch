@@ -1,0 +1,20 @@
+--- mysql/storage/maria/ma_test2.c	2012-04-05 06:48:45.000000000 -0400
++++ mysql.new/storage/maria/ma_test2.c	2012-04-25 10:08:30.768603663 -0400
+@@ -259,7 +259,7 @@
+   for (i=0 ; i < recant ; i++)
+   {
+     ulong blob_length;
+-    n1=rnd(1000); n2=rnd(100); n3=rnd(5000);
++    n1=rnd(1000); n2=rnd(100); n3=rnd(4999);
+     sprintf((char*) record,"%6d:%4d:%8d:Pos: %4d    ",n1,n2,n3,write_count);
+     int4store(record+STANDARD_LENGTH-4,(long) i);
+     fix_length(record,(uint) STANDARD_LENGTH+rnd(60));
+@@ -374,7 +374,7 @@
+ 
+   for (i=0 ; i < update_count ; i++)
+   {
+-    n1=rnd(1000); n2=rnd(100); n3=rnd(5000);
++    n1=rnd(1000); n2=rnd(100); n3=rnd(4999);
+     sprintf((char*) record2,"%6d:%4d:%8d:XXX: %4d     ",n1,n2,n3,update);
+     int4store(record2+STANDARD_LENGTH-4,(long) i);
+     fix_length(record2,(uint) STANDARD_LENGTH+rnd(60));
