@@ -1,0 +1,33 @@
+--- mysql/CMakeLists.txt	2012-08-03 16:37:52.234629566 -0400
++++ mysql/CMakeLists.txt	2012-08-03 16:35:47.797340969 -0400
+@@ -320,6 +320,13 @@
+   IF(UNIX)
+     ADD_SUBDIRECTORY(man)
+   ENDIF()
++ELSE()
++  ADD_SUBDIRECTORY(client)
++  ADD_SUBDIRECTORY(sql/share)
++  ADD_SUBDIRECTORY(scripts)
++  IF(UNIX)
++    ADD_SUBDIRECTORY(man)
++  ENDIF()
+ ENDIF()
+
+ INCLUDE(cmake/abi_check.cmake)
+--- mysql/mysys/CMakeLists.txt   2012-06-21 16:03:32.000000000 -0400
++++ mysql/mysys/CMakeLists.txt       2012-08-06 11:23:39.315296578 -0400
+@@ -36,9 +36,13 @@
+ 				lf_alloc-pin.c lf_dynarray.c lf_hash.c
+                 safemalloc.c my_new.cc
+ 				my_atomic.c my_getncpus.c my_safehash.c my_chmod.c my_rnd.c
+-                                my_uuid.c wqueue.c waiting_threads.c ma_dyncol.c
++                                my_uuid.c wqueue.c ma_dyncol.c
+ 				my_rdtsc.c my_context.c)
+ 
++IF(NOT WITHOUT_SERVER)
++ SET (MYSYS_SOURCES ${MYSYS_SOURCES} waiting_threads.c)
++ENDIF()
++
+ IF (WIN32)
+  SET (MYSYS_SOURCES ${MYSYS_SOURCES} my_winthread.c my_wincond.c my_winerr.c my_winfile.c my_windac.c my_conio.c)
+ ENDIF()
