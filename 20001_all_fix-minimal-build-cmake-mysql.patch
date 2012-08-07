@@ -1,6 +1,6 @@
 --- mysql/CMakeLists.txt	2012-08-03 16:37:52.234629566 -0400
 +++ mysql.new/CMakeLists.txt	2012-08-03 16:35:47.797340969 -0400
-@@ -320,6 +320,13 @@
+@@ -320,6 +320,14 @@
    IF(UNIX)
      ADD_SUBDIRECTORY(man)
    ENDIF()
@@ -8,6 +8,7 @@
 +  ADD_SUBDIRECTORY(client)
 +  ADD_SUBDIRECTORY(sql/share)
 +  ADD_SUBDIRECTORY(scripts)
++  ADD_SUBDIRECTORY(support-files)
 +  IF(UNIX)
 +    ADD_SUBDIRECTORY(man)
 +  ENDIF()
