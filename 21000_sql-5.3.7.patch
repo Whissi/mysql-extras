@@ -1,0 +1,3258 @@
+=== modified file 'client/mysqlbinlog.cc'
+--- client/mysqlbinlog.cc	2011-12-11 09:34:44 +0000
++++ client/mysqlbinlog.cc	2012-08-24 12:02:32 +0000
+@@ -731,7 +731,7 @@
+     return;
+ 
+   // In case of rewrite rule print USE statement for db_to
+-  fprintf(result_file, "use %s%s\n", db_to, pinfo->delimiter);
++  my_fprintf(result_file, "use %`s%s\n", db_to, pinfo->delimiter);
+ 
+   // Copy the *original* db to pinfo to suppress emiting
+   // of USE stmts by log_event print-functions.
+
+=== modified file 'include/my_sys.h'
+--- include/my_sys.h	2011-12-11 09:34:44 +0000
++++ include/my_sys.h	2012-08-24 12:02:32 +0000
+@@ -686,6 +686,7 @@
+ extern FILE *my_fdopen(File Filedes,const char *name, int Flags,myf MyFlags);
+ extern FILE *my_freopen(const char *path, const char *mode, FILE *stream);
+ extern int my_fclose(FILE *fd,myf MyFlags);
++extern int my_fprintf(FILE *stream, const char* format, ...);
+ extern File my_fileno(FILE *fd);
+ extern int my_chsize(File fd,my_off_t newlength, int filler, myf MyFlags);
+ extern int my_chmod(const char *name, mode_t mode, myf my_flags);
+@@ -822,6 +823,8 @@
+ extern void my_b_seek(IO_CACHE *info,my_off_t pos);
+ extern size_t my_b_gets(IO_CACHE *info, char *to, size_t max_length);
+ extern my_off_t my_b_filelength(IO_CACHE *info);
++extern size_t my_b_write_backtick_quote(IO_CACHE *info, const char *str,
++                                        size_t len);
+ extern size_t my_b_printf(IO_CACHE *info, const char* fmt, ...);
+ extern size_t my_b_vprintf(IO_CACHE *info, const char* fmt, va_list ap);
+ extern int init_strvar_from_file(char *var, int max_size, IO_CACHE *f,
+
+=== modified file 'mysql-test/r/func_compress.result'
+--- mysql-test/r/func_compress.result	2011-11-21 16:00:55 +0000
++++ mysql-test/r/func_compress.result	2012-08-24 12:02:32 +0000
+@@ -11,7 +11,7 @@
+ id	select_type	table	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+ 1	SIMPLE	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	No tables used
+ Warnings:
+-Note	1003	select uncompress(compress((@test_compress_string))) AS `uncompress(compress(@test_compress_string))`
++Note	1003	select uncompress(compress((@`test_compress_string`))) AS `uncompress(compress(@test_compress_string))`
+ select uncompressed_length(compress(@test_compress_string))=length(@test_compress_string);
+ uncompressed_length(compress(@test_compress_string))=length(@test_compress_string)
+ 1
+@@ -19,7 +19,7 @@
+ id	select_type	table	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+ 1	SIMPLE	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	No tables used
+ Warnings:
+-Note	1003	select (uncompressed_length(compress((@test_compress_string))) = length((@test_compress_string))) AS `uncompressed_length(compress(@test_compress_string))=length(@test_compress_string)`
++Note	1003	select (uncompressed_length(compress((@`test_compress_string`))) = length((@`test_compress_string`))) AS `uncompressed_length(compress(@test_compress_string))=length(@test_compress_string)`
+ select uncompressed_length(compress(@test_compress_string));
+ uncompressed_length(compress(@test_compress_string))
+ 117
+
+=== modified file 'mysql-test/r/func_time_hires.result'
+--- mysql-test/r/func_time_hires.result	2011-06-07 16:13:02 +0000
++++ mysql-test/r/func_time_hires.result	2012-08-24 12:02:32 +0000
+@@ -156,12 +156,12 @@
+ id	select_type	table	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+ 1	SIMPLE	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	No tables used
+ Warnings:
+-Note	1003	select cast(cast((@a) as datetime(4)) as time) AS `cast(cast(@a as datetime(4)) as time(0))`
++Note	1003	select cast(cast((@`a`) as datetime(4)) as time) AS `cast(cast(@a as datetime(4)) as time(0))`
+ select cast(cast(@a as time(2)) as time(6));
+ cast(cast(@a as time(2)) as time(6))
+ 12:13:14.120000
+ select CAST(@a AS DATETIME(7));
+-ERROR 42000: Too big precision 7 specified for '(@a)'. Maximum is 6.
++ERROR 42000: Too big precision 7 specified for '(@`a`)'. Maximum is 6.
+ SELECT CONVERT_TZ('2011-01-02 12:00:00', '+00:00', '+03:00');
+ CONVERT_TZ('2011-01-02 12:00:00', '+00:00', '+03:00')
+ 2011-01-02 15:00:00
+
+=== modified file 'mysql-test/r/mysqlbinlog-innodb.result'
+--- mysql-test/r/mysqlbinlog-innodb.result	2011-01-13 12:28:36 +0000
++++ mysql-test/r/mysqlbinlog-innodb.result	2012-08-24 10:32:46 +0000
+@@ -34,7 +34,7 @@
+ SET @@session.collation_database=DEFAULT/*!*/;
+ BEGIN
+ /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ INSERT INTO t1 VALUES (1)
+ /*!*/;
+@@ -65,7 +65,7 @@
+ SET @@session.collation_database=DEFAULT/*!*/;
+ BEGIN
+ /*!*/;
+-use foo/*!*/;
++use `foo`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ INSERT INTO t1 VALUES (1)
+ /*!*/;
+
+=== modified file 'mysql-test/r/mysqlbinlog.result'
+--- mysql-test/r/mysqlbinlog.result	2011-05-10 15:17:43 +0000
++++ mysql-test/r/mysqlbinlog.result	2012-08-24 12:02:32 +0000
+@@ -20,7 +20,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -66,7 +66,7 @@
+ /*!40019 SET @@session.max_insert_delayed_threads=0*/;
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -99,7 +99,7 @@
+ /*!40019 SET @@session.max_insert_delayed_threads=0*/;
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -121,7 +121,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -167,7 +167,7 @@
+ /*!40019 SET @@session.max_insert_delayed_threads=0*/;
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -200,7 +200,7 @@
+ /*!40019 SET @@session.max_insert_delayed_threads=0*/;
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -229,7 +229,7 @@
+ SET @@session.collation_database=DEFAULT/*!*/;
+ BEGIN
+ /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1108844555/*!*/;
+ insert t1 values (1)
+ /*!*/;
+@@ -248,7 +248,7 @@
+ SET @@session.collation_database=DEFAULT/*!*/;
+ BEGIN
+ /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1108844555/*!*/;
+ insert t1 values (1)
+ /*!*/;
+@@ -302,7 +302,7 @@
+ /*!40019 SET @@session.max_insert_delayed_threads=0*/;
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -352,7 +352,7 @@
+ /*!40019 SET @@session.max_insert_delayed_threads=0*/;
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -487,7 +487,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1253783037/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -587,7 +587,7 @@
+ SET TIMESTAMP=1266652094/*!*/;
+ SavePoint mixed_cases
+ /*!*/;
+-use db1/*!*/;
++use `db1`/*!*/;
+ SET TIMESTAMP=1266652094/*!*/;
+ INSERT INTO db1.t2 VALUES("in savepoint mixed_cases")
+ /*!*/;
+
+=== modified file 'mysql-test/r/mysqlbinlog2.result'
+--- mysql-test/r/mysqlbinlog2.result	2008-04-02 09:49:22 +0000
++++ mysql-test/r/mysqlbinlog2.result	2012-08-24 08:06:16 +0000
+@@ -19,7 +19,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -62,7 +62,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=1/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -101,7 +101,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=4/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609946/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -127,7 +127,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -162,7 +162,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=4/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609946/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -185,7 +185,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=3/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609944/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -215,7 +215,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -246,7 +246,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -281,7 +281,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -304,7 +304,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=1/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -335,7 +335,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -358,7 +358,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=4/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609946/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -377,7 +377,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -399,7 +399,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -445,7 +445,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=3/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609944/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -468,7 +468,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -490,7 +490,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -520,7 +520,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -563,7 +563,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=1/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -601,7 +601,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ SET INSERT_ID=4/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609946/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -627,7 +627,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -661,7 +661,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ SET INSERT_ID=4/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609946/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -684,7 +684,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=3/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609944/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -714,7 +714,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -744,7 +744,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -779,7 +779,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -802,7 +802,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=1/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -833,7 +833,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -855,7 +855,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ SET INSERT_ID=4/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609946/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -874,7 +874,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -896,7 +896,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -942,7 +942,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET INSERT_ID=3/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609944/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -965,7 +965,7 @@
+ DELIMITER ;
+ DELIMITER /*!*/;
+ SET INSERT_ID=6/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609943/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -987,7 +987,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -1017,7 +1017,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1579609942/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/r/mysqlbinlog_row.result'
+--- mysql-test/r/mysqlbinlog_row.result	2008-09-06 04:49:43 +0000
++++ mysql-test/r/mysqlbinlog_row.result	2012-08-24 08:06:16 +0000
+@@ -336,7 +336,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/r/mysqlbinlog_row_innodb.result'
+--- mysql-test/r/mysqlbinlog_row_innodb.result	2010-03-22 12:10:18 +0000
++++ mysql-test/r/mysqlbinlog_row_innodb.result	2012-08-24 08:06:16 +0000
+@@ -2253,7 +2253,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -3876,7 +3876,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -4243,7 +4243,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -4804,7 +4804,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/r/mysqlbinlog_row_myisam.result'
+--- mysql-test/r/mysqlbinlog_row_myisam.result	2008-09-06 04:49:43 +0000
++++ mysql-test/r/mysqlbinlog_row_myisam.result	2012-08-24 08:06:16 +0000
+@@ -2253,7 +2253,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -3898,7 +3898,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -4271,7 +4271,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -4842,7 +4842,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/r/mysqlbinlog_row_trans.result'
+--- mysql-test/r/mysqlbinlog_row_trans.result	2009-08-27 09:32:27 +0000
++++ mysql-test/r/mysqlbinlog_row_trans.result	2012-08-24 08:06:16 +0000
+@@ -132,7 +132,7 @@
+ ROLLBACK/*!*/;
+ # at #
+ #010909  4:46:40 server id 1  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/r/user_var-binlog.result'
+--- mysql-test/r/user_var-binlog.result	2008-04-02 09:49:22 +0000
++++ mysql-test/r/user_var-binlog.result	2012-08-24 08:06:16 +0000
+@@ -19,7 +19,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET @`a b`:=_latin1 0x68656C6C6F COLLATE `latin1_swedish_ci`/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=10000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/r/variables.result'
+--- mysql-test/r/variables.result	2011-12-11 09:34:44 +0000
++++ mysql-test/r/variables.result	2012-08-24 12:02:32 +0000
+@@ -78,7 +78,7 @@
+ id	select_type	table	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+ 1	SIMPLE	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	No tables used
+ Warnings:
+-Note	1003	select (@t1:=((@t2:=1) + (@t3:=4))) AS `@t1:=(@t2:=1)+@t3:=4`,(@t1) AS `@t1`,(@t2) AS `@t2`,(@t3) AS `@t3`
++Note	1003	select (@t1:=((@t2:=1) + (@t3:=4))) AS `@t1:=(@t2:=1)+@t3:=4`,(@`t1`) AS `@t1`,(@`t2`) AS `@t2`,(@`t3`) AS `@t3`
+ select @t5;
+ @t5
+ 1.23456
+
+=== modified file 'mysql-test/suite/binlog/r/binlog_base64_flag.result'
+--- mysql-test/suite/binlog/r/binlog_base64_flag.result	2011-02-23 09:31:37 +0000
++++ mysql-test/suite/binlog/r/binlog_base64_flag.result	2012-08-24 08:06:16 +0000
+@@ -35,7 +35,7 @@
+ # at 4
+ <#>ROLLBACK/*!*/;
+ # at 102
+-<#>use test/*!*/;
++<#>use `test`/*!*/;
+ SET TIMESTAMP=1196959712/*!*/;
+ <#>SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+ SET @@session.sql_mode=0/*!*/;
+
+=== modified file 'mysql-test/suite/binlog/r/binlog_row_mysqlbinlog_options.result'
+--- mysql-test/suite/binlog/r/binlog_row_mysqlbinlog_options.result	2011-01-13 12:28:36 +0000
++++ mysql-test/suite/binlog/r/binlog_row_mysqlbinlog_options.result	2012-08-24 10:32:46 +0000
+@@ -35,7 +35,7 @@
+ #010909  4:46:40 server id #  end_log_pos # 	Start: binlog v 4, server v #.##.## created 010909  4:46:40 at startup
+ ROLLBACK/*!*/;
+ # at #
+-use new_test1/*!*/;
++use `new_test1`/*!*/;
+ #010909  4:46:40 server id #  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+@@ -72,7 +72,7 @@
+ /*!*/;
+ # at #
+ #010909  4:46:40 server id #  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test2/*!*/;
++use `test2`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ CREATE TABLE t2 (a INT)
+ /*!*/;
+@@ -115,7 +115,7 @@
+ COMMIT
+ /*!*/;
+ # at #
+-use new_test3/*!*/;
++use `new_test3`/*!*/;
+ #010909  4:46:40 server id #  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+ SET TIMESTAMP=1000000000/*!*/;
+ CREATE TABLE t3 (a INT)
+@@ -229,7 +229,7 @@
+ #010909  4:46:40 server id #  end_log_pos # 	Start: binlog v 4, server v #.##.## created 010909  4:46:40 at startup
+ ROLLBACK/*!*/;
+ # at #
+-use new_test1/*!*/;
++use `new_test1`/*!*/;
+ #010909  4:46:40 server id #  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=#/*!*/;
+@@ -266,7 +266,7 @@
+ /*!*/;
+ # at #
+ #010909  4:46:40 server id #  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+-use test2/*!*/;
++use `test2`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ CREATE TABLE t2 (a INT)
+ /*!*/;
+@@ -309,7 +309,7 @@
+ COMMIT
+ /*!*/;
+ # at #
+-use new_test3/*!*/;
++use `new_test3`/*!*/;
+ #010909  4:46:40 server id #  end_log_pos # 	Query	thread_id=#	exec_time=#	error_code=0
+ SET TIMESTAMP=1000000000/*!*/;
+ CREATE TABLE t3 (a INT)
+
+=== modified file 'mysql-test/suite/binlog/r/binlog_stm_ctype_ucs.result'
+--- mysql-test/suite/binlog/r/binlog_stm_ctype_ucs.result	2008-10-23 19:27:09 +0000
++++ mysql-test/suite/binlog/r/binlog_stm_ctype_ucs.result	2012-08-24 08:06:16 +0000
+@@ -13,7 +13,7 @@
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+ SET @`v`:=_ucs2 0x006100620063 COLLATE `ucs2_general_ci`/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=10000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/suite/binlog/r/binlog_stm_mix_innodb_myisam.result'
+--- mysql-test/suite/binlog/r/binlog_stm_mix_innodb_myisam.result	2010-09-02 13:05:06 +0000
++++ mysql-test/suite/binlog/r/binlog_stm_mix_innodb_myisam.result	2012-08-24 08:06:16 +0000
+@@ -631,7 +631,7 @@
+ master-bin.000001	#	Intvar	#	#	INSERT_ID=10
+ master-bin.000001	#	Begin_load_query	#	#	;file_id=#;block_len=#
+ master-bin.000001	#	Intvar	#	#	INSERT_ID=10
+-master-bin.000001	#	Execute_load_query	#	#	use `test`; LOAD DATA INFILE '../../std_data/rpl_loaddata.dat' INTO TABLE `t4` FIELDS TERMINATED BY '\t' ENCLOSED BY '' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a`, @b) SET `b`=((@b) + `bug27417`(2)) ;file_id=#
++master-bin.000001	#	Execute_load_query	#	#	use `test`; LOAD DATA INFILE '../../std_data/rpl_loaddata.dat' INTO TABLE `t4` FIELDS TERMINATED BY '\t' ENCLOSED BY '' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a`, @`b`) SET `b`=((@`b`) + `bug27417`(2)) ;file_id=#
+ master-bin.000001	#	Query	#	#	ROLLBACK
+ /* the output must denote there is the query */;
+ drop trigger trg_del_t2;
+@@ -869,7 +869,7 @@
+ master-bin.000001	#	Begin_load_query	#	#	;file_id=#;block_len=#
+ master-bin.000001	#	Intvar	#	#	INSERT_ID=10
+ master-bin.000001	#	User var	#	#	@`b`=_latin1 0x3135 COLLATE latin1_swedish_ci
+-master-bin.000001	#	Execute_load_query	#	#	use `test`; LOAD DATA INFILE '../../std_data/rpl_loaddata.dat' INTO TABLE `t4` FIELDS TERMINATED BY '\t' ENCLOSED BY '' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a`, @b) SET `b`=((@b) + `bug27417`(2)) ;file_id=#
++master-bin.000001	#	Execute_load_query	#	#	use `test`; LOAD DATA INFILE '../../std_data/rpl_loaddata.dat' INTO TABLE `t4` FIELDS TERMINATED BY '\t' ENCLOSED BY '' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a`, @`b`) SET `b`=((@`b`) + `bug27417`(2)) ;file_id=#
+ master-bin.000001	#	Query	#	#	ROLLBACK
+ drop trigger trg_del_t2;
+ drop table t1,t2,t3,t4,t5;
+
+=== modified file 'mysql-test/suite/rpl/r/rpl_hrtime.result'
+--- mysql-test/suite/rpl/r/rpl_hrtime.result	2011-05-28 02:11:32 +0000
++++ mysql-test/suite/rpl/r/rpl_hrtime.result	2012-08-24 12:02:32 +0000
+@@ -30,7 +30,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1293832861/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== added file 'mysql-test/suite/rpl/r/rpl_mdev382.result'
+--- mysql-test/suite/rpl/r/rpl_mdev382.result	1970-01-01 00:00:00 +0000
++++ mysql-test/suite/rpl/r/rpl_mdev382.result	2012-08-24 10:32:46 +0000
+@@ -0,0 +1,302 @@
++include/master-slave.inc
++[connection master]
++create table t1 (a int primary key) engine=innodb;
++create table t2 (a int primary key) engine=myisam;
++begin;
++insert into t1 values (1);
++SET sql_mode = 'ANSI_QUOTES';
++savepoint `a``; create database couldbebadthingshere; savepoint ``dummy`;
++insert into t1 values (2);
++insert into t2 values (1);
++SET sql_mode = '';
++rollback to savepoint `a``; create database couldbebadthingshere; savepoint ``dummy`;
++Warnings:
++Warning	1196	Some non-transactional changed tables couldn't be rolled back
++insert into t1 values (3);
++commit;
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	use `test`; create table t1 (a int primary key) engine=innodb
++master-bin.000001	#	Query	#	#	use `test`; create table t2 (a int primary key) engine=myisam
++master-bin.000001	#	Query	#	#	BEGIN
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values (1)
++master-bin.000001	#	Query	#	#	SAVEPOINT "a`; create database couldbebadthingshere; savepoint `dummy"
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values (2)
++master-bin.000001	#	Query	#	#	use `test`; insert into t2 values (1)
++master-bin.000001	#	Query	#	#	ROLLBACK TO `a``; create database couldbebadthingshere; savepoint ``dummy`
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values (3)
++master-bin.000001	#	Xid	#	#	COMMIT /* XID */
++BEGIN;
++insert into t1 values(10);
++set sql_mode = 'ANSI_QUOTES';
++set sql_quote_show_create = 1;
++savepoint a;
++insert into t1 values(11);
++savepoint "a""a";
++insert into t1 values(12);
++set sql_quote_show_create = 0;
++savepoint b;
++insert into t1 values(13);
++savepoint "b""b";
++insert into t1 values(14);
++set sql_mode = '';
++set sql_quote_show_create = 1;
++savepoint c;
++insert into t1 values(15);
++savepoint `c``c`;
++insert into t1 values(16);
++set sql_quote_show_create = 0;
++savepoint d;
++insert into t1 values(17);
++savepoint `d``d`;
++insert into t1 values(18);
++COMMIT;
++set sql_quote_show_create = 1;
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	BEGIN
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(10)
++master-bin.000001	#	Query	#	#	SAVEPOINT "a"
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(11)
++master-bin.000001	#	Query	#	#	SAVEPOINT "a""a"
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(12)
++master-bin.000001	#	Query	#	#	SAVEPOINT b
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(13)
++master-bin.000001	#	Query	#	#	SAVEPOINT "b""b"
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(14)
++master-bin.000001	#	Query	#	#	SAVEPOINT `c`
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(15)
++master-bin.000001	#	Query	#	#	SAVEPOINT `c``c`
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(16)
++master-bin.000001	#	Query	#	#	SAVEPOINT d
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(17)
++master-bin.000001	#	Query	#	#	SAVEPOINT `d``d`
++master-bin.000001	#	Query	#	#	use `test`; insert into t1 values(18)
++master-bin.000001	#	Xid	#	#	COMMIT /* XID */
++*** Test correct USE statement in SHOW BINLOG EVENTS ***
++set sql_mode = 'ANSI_QUOTES';
++CREATE DATABASE "db1`; SELECT 'oops!'";
++use "db1`; SELECT 'oops!'";
++CREATE TABLE t1 (a INT PRIMARY KEY) engine=MyISAM;
++INSERT INTO t1 VALUES (1);
++set sql_mode = '';
++INSERT INTO t1 VALUES (2);
++set sql_mode = 'ANSI_QUOTES';
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	CREATE DATABASE "db1`; SELECT 'oops!'"
++master-bin.000001	#	Query	#	#	use "db1`; SELECT 'oops!'"; CREATE TABLE t1 (a INT PRIMARY KEY) engine=MyISAM
++master-bin.000001	#	Query	#	#	use "db1`; SELECT 'oops!'"; INSERT INTO t1 VALUES (1)
++master-bin.000001	#	Query	#	#	use "db1`; SELECT 'oops!'"; INSERT INTO t1 VALUES (2)
++set sql_mode = '';
++set sql_quote_show_create = 0;
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	CREATE DATABASE "db1`; SELECT 'oops!'"
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; CREATE TABLE t1 (a INT PRIMARY KEY) engine=MyISAM
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; INSERT INTO t1 VALUES (1)
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; INSERT INTO t1 VALUES (2)
++set sql_quote_show_create = 1;
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	CREATE DATABASE "db1`; SELECT 'oops!'"
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; CREATE TABLE t1 (a INT PRIMARY KEY) engine=MyISAM
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; INSERT INTO t1 VALUES (1)
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; INSERT INTO t1 VALUES (2)
++DROP TABLE t1;
++use test;
++***Test LOAD DATA INFILE with various identifiers that need correct quoting ***
++use `db1``; SELECT 'oops!'`;
++set timestamp=1000000000;
++CREATE TABLE `t``1` (`a``1` VARCHAR(4) PRIMARY KEY, `b``2` VARCHAR(3),
++`c``3` VARCHAR(7));
++LOAD DATA INFILE 'MYSQLTEST_VARDIR/tmp/f''le.txt' INTO TABLE `t``1`
++  FIELDS TERMINATED BY ',' ESCAPED BY '\\' ENCLOSED BY ''''
++  LINES TERMINATED BY '\n'
++  (`a``1`, @`b```) SET `b``2` = @`b```, `c``3` = concat('|', "b""a'z", "!");
++SELECT * FROM `t``1`;
++a`1	b`2	c`3
++fo\o	bar	|b"a'z!
++truncate `t``1`;
++use test;
++LOAD DATA INFILE 'MYSQLTEST_VARDIR/tmp/f''le.txt'
++  INTO TABLE `db1``; SELECT 'oops!'`.`t``1`
++  FIELDS TERMINATED BY ',' ESCAPED BY '\\' ENCLOSED BY ''''
++  LINES TERMINATED BY '\n'
++  (`a``1`, `b``2`) SET `c``3` = concat('|', "b""a'z", "!");
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++a`1	b`2	c`3
++fo\o	bar	|b"a'z!
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; CREATE TABLE `t``1` (`a``1` VARCHAR(4) PRIMARY KEY, `b``2` VARCHAR(3),
++`c``3` VARCHAR(7))
++master-bin.000001	#	Begin_load_query	#	#	;file_id=#;block_len=#
++master-bin.000001	#	Execute_load_query	#	#	use `db1``; SELECT 'oops!'`; LOAD DATA INFILE 'MYSQLTEST_VARDIR/tmp/f\'le.txt' INTO TABLE `t``1` FIELDS TERMINATED BY ',' ENCLOSED BY '\'' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a``1`, @`b```) SET `b``2`=(@`b```), `c``3`=concat('|','b"a\'z','!') ;file_id=#
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; truncate `t``1`
++master-bin.000001	#	Begin_load_query	#	#	;file_id=#;block_len=#
++master-bin.000001	#	Execute_load_query	#	#	use `test`; LOAD DATA INFILE 'MYSQLTEST_VARDIR/tmp/f\'le.txt' INTO TABLE `db1``; SELECT 'oops!'`.`t``1` FIELDS TERMINATED BY ',' ENCLOSED BY '\'' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a``1`, `b``2`) SET `c``3`=concat('|','b"a\'z','!') ;file_id=#
++/*!40019 SET @@session.max_insert_delayed_threads=0*/;
++/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
++DELIMITER /*!*/;
++ROLLBACK/*!*/;
++use `db1``; SELECT 'oops!'`/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++SET @@session.pseudo_thread_id=999999999/*!*/;
++SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
++SET @@session.sql_mode=0/*!*/;
++SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
++/*!\C latin1 *//*!*/;
++SET @@session.character_set_client=8,@@session.collation_connection=8,@@session.collation_server=8/*!*/;
++SET @@session.lc_time_names=0/*!*/;
++SET @@session.collation_database=DEFAULT/*!*/;
++CREATE TABLE `t``1` (`a``1` VARCHAR(4) PRIMARY KEY, `b``2` VARCHAR(3),
++`c``3` VARCHAR(7))
++/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++LOAD DATA LOCAL INFILE '<name>' INTO TABLE `t``1` FIELDS TERMINATED BY ',' ENCLOSED BY '\'' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a``1`, @`b```) SET `b``2`=(@`b```), `c``3`=concat('|','b"a\'z','!')
++/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++truncate `t``1`
++/*!*/;
++use `test`/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++LOAD DATA LOCAL INFILE '<name>' INTO TABLE `db1``; SELECT 'oops!'`.`t``1` FIELDS TERMINATED BY ',' ENCLOSED BY '\'' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a``1`, `b``2`) SET `c``3`=concat('|','b"a\'z','!')
++/*!*/;
++DELIMITER ;
++# End of log file
++ROLLBACK /* added by mysqlbinlog */;
++/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++a`1	b`2	c`3
++fo\o	bar	|b"a'z!
++DROP TABLE `db1``; SELECT 'oops!'`.`t``1`;
++drop table t1,t2;
++*** Test truncation of long SET expression in LOAD DATA ***
++CREATE TABLE t1 (a INT PRIMARY KEY, b VARCHAR(1000));
++LOAD DATA INFILE 'MYSQLTEST_VARDIR/tmp/file.txt' INTO TABLE t1
++FIELDS TERMINATED BY ','
++  (a, @b) SET b = CONCAT(@b, '| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|', @b);
++SELECT * FROM t1 ORDER BY a;
++a	b
++1	X| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|X
++2	A| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|A
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Begin_load_query	#	#	;file_id=#;block_len=#
++master-bin.000001	#	Execute_load_query	#	#	use `test`; LOAD DATA INFILE 'MYSQLTEST_VARDIR/tmp/file.txt' INTO TABLE `t1` FIELDS TERMINATED BY ',' ENCLOSED BY '' ESCAPED BY '\\' LINES TERMINATED BY '\n' (`a`, @`b`) SET `b`=concat((@`b`),'| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|',(@`b`)) ;file_id=#
++SELECT * FROM t1 ORDER BY a;
++a	b
++1	X| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|X
++2	A| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|A
++DROP TABLE t1;
++*** Test user variables whose names require correct quoting ***
++use `db1``; SELECT 'oops!'`;
++CREATE TABLE t1 (a1 BIGINT PRIMARY KEY, a2 BIGINT, a3 BIGINT, a4 BIGINT UNSIGNED, b DOUBLE, c DECIMAL(65,10), d VARCHAR(100));
++INSERT INTO t1 VALUES (-9223372036854775808,42,9223372036854775807,18446744073709551615,-1234560123456789e110, -1234501234567890123456789012345678901234567890123456789.0123456789, REPEAT("x", 100));
++SELECT @`a``1`:=a1, @`a``2`:=a2, @`a``3`:=a3, @`a``4`:=a4, @`b```:=b, @```c`:=c, @```d```:=d FROM t1;
++@`a``1`:=a1	@`a``2`:=a2	@`a``3`:=a3	@`a``4`:=a4	@`b```:=b	@```c`:=c	@```d```:=d
++-9223372036854775808	42	9223372036854775807	18446744073709551615	-1.23456012345679e+125	-1234501234567890123456789012345678901234567890123456789.0123456789	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
++INSERT INTO t1 VALUES (@`a``1`+1, @`a``2`*100, @`a``3`-1, @`a``4`-1, @`b```/2, @```c`, substr(@```d```, 2, 98));
++show binlog events from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; CREATE TABLE t1 (a1 BIGINT PRIMARY KEY, a2 BIGINT, a3 BIGINT, a4 BIGINT UNSIGNED, b DOUBLE, c DECIMAL(65,10), d VARCHAR(100))
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; INSERT INTO t1 VALUES (-9223372036854775808,42,9223372036854775807,18446744073709551615,-1234560123456789e110, -1234501234567890123456789012345678901234567890123456789.0123456789, REPEAT("x", 100))
++master-bin.000001	#	User var	#	#	@`a``1`=-9223372036854775808
++master-bin.000001	#	User var	#	#	@`a``2`=42
++master-bin.000001	#	User var	#	#	@`a``3`=9223372036854775807
++master-bin.000001	#	User var	#	#	@`a``4`=-1
++master-bin.000001	#	User var	#	#	@`b```=-1.2345601234568e+125
++master-bin.000001	#	User var	#	#	@```c`=-1234501234567890123456789012345678901234567890123456789.0123456789
++master-bin.000001	#	User var	#	#	@```d```=_latin1 0x78787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878 COLLATE latin1_swedish_ci
++master-bin.000001	#	Query	#	#	use `db1``; SELECT 'oops!'`; INSERT INTO t1 VALUES (@`a``1`+1, @`a``2`*100, @`a``3`-1, @`a``4`-1, @`b```/2, @```c`, substr(@```d```, 2, 98))
++/*!40019 SET @@session.max_insert_delayed_threads=0*/;
++/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
++DELIMITER /*!*/;
++ROLLBACK/*!*/;
++use `db1``; SELECT 'oops!'`/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++SET @@session.pseudo_thread_id=999999999/*!*/;
++SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
++SET @@session.sql_mode=0/*!*/;
++SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
++/*!\C latin1 *//*!*/;
++SET @@session.character_set_client=8,@@session.collation_connection=8,@@session.collation_server=8/*!*/;
++SET @@session.lc_time_names=0/*!*/;
++SET @@session.collation_database=DEFAULT/*!*/;
++CREATE TABLE t1 (a1 BIGINT PRIMARY KEY, a2 BIGINT, a3 BIGINT, a4 BIGINT UNSIGNED, b DOUBLE, c DECIMAL(65,10), d VARCHAR(100))
++/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++INSERT INTO t1 VALUES (-9223372036854775808,42,9223372036854775807,18446744073709551615,-1234560123456789e110, -1234501234567890123456789012345678901234567890123456789.0123456789, REPEAT("x", 100))
++/*!*/;
++SET @`a``1`:=-9223372036854775808/*!*/;
++SET @`a``2`:=42/*!*/;
++SET @`a``3`:=9223372036854775807/*!*/;
++SET @`a``4`:=-1/*!*/;
++SET @`b```:=-1.2345601234568e+125/*!*/;
++SET @```c`:=-1234501234567890123456789012345678901234567890123456789.0123456789/*!*/;
++SET @```d```:=_latin1 0x78787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878 COLLATE `latin1_swedish_ci`/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++INSERT INTO t1 VALUES (@`a``1`+1, @`a``2`*100, @`a``3`-1, @`a``4`-1, @`b```/2, @```c`, substr(@```d```, 2, 98))
++/*!*/;
++DELIMITER ;
++# End of log file
++ROLLBACK /* added by mysqlbinlog */;
++/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
++SELECT * FROM `db1``; SELECT 'oops!'`.t1 ORDER BY a1;
++a1	a2	a3	a4	b	c	d
++-9223372036854775808	42	9223372036854775807	18446744073709551615	-1.23456012345679e+125	-1234501234567890123456789012345678901234567890123456789.0123456789	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
++-9223372036854775807	4200	9223372036854775806	0	-6.17280061728394e+124	-1234501234567890123456789012345678901234567890123456789.0123456789	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
++DROP TABLE t1;
++*** Test correct quoting of DELETE FROM statement binlogged for HEAP table that is emptied due to server restart
++include/stop_slave.inc
++CREATE TABLE `db1``; SELECT 'oops!'`.`t``1` (`a``` INT PRIMARY KEY) ENGINE=heap;
++INSERT INTO `db1``; SELECT 'oops!'`.`t``1` VALUES (1), (2), (5);
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1` ORDER BY 1;
++a`
++1
++2
++5
++set timestamp=1000000000;
++# The table should be empty on the master.
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++a`
++# The DELETE statement should be correctly quoted
++show binlog events in 'master-bin.000002' from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000002	#	Query	#	#	use `test`; DELETE FROM `db1``; SELECT 'oops!'`.`t``1`
++include/start_slave.inc
++# The table should be empty on the slave also.
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++a`
++DROP TABLE `db1``; SELECT 'oops!'`.`t``1`;
++use test;
++DROP DATABASE `db1``; SELECT 'oops!'`;
++*** Test correct quoting of mysqlbinlog --rewrite-db option ***
++CREATE TABLE t1 (a INT PRIMARY KEY);
++INSERT INTO t1 VALUES(1);
++show binlog events in 'master-bin.000002' from <binlog_start>;
++Log_name	Pos	Event_type	Server_id	End_log_pos	Info
++master-bin.000002	#	Query	#	#	use `test`; INSERT INTO t1 VALUES(1)
++/*!40019 SET @@session.max_insert_delayed_threads=0*/;
++/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
++DELIMITER /*!*/;
++ROLLBACK/*!*/;
++use `ts``et`/*!*/;
++SET TIMESTAMP=1000000000/*!*/;
++SET @@session.pseudo_thread_id=999999999/*!*/;
++SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
++SET @@session.sql_mode=0/*!*/;
++SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
++/*!\C latin1 *//*!*/;
++SET @@session.character_set_client=8,@@session.collation_connection=8,@@session.collation_server=8/*!*/;
++SET @@session.lc_time_names=0/*!*/;
++SET @@session.collation_database=DEFAULT/*!*/;
++INSERT INTO t1 VALUES(1)
++/*!*/;
++DELIMITER ;
++# End of log file
++ROLLBACK /* added by mysqlbinlog */;
++/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
++DROP TABLE t1;
++include/rpl_end.inc
+
+=== modified file 'mysql-test/suite/rpl/r/rpl_row_mysqlbinlog.result'
+--- mysql-test/suite/rpl/r/rpl_row_mysqlbinlog.result	2010-12-19 17:07:28 +0000
++++ mysql-test/suite/rpl/r/rpl_row_mysqlbinlog.result	2012-08-24 08:06:16 +0000
+@@ -153,7 +153,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -175,7 +175,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -284,7 +284,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+@@ -316,7 +316,7 @@
+ /*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+ DELIMITER /*!*/;
+ ROLLBACK/*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=1000000000/*!*/;
+ SET @@session.pseudo_thread_id=999999999/*!*/;
+ SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+
+=== modified file 'mysql-test/suite/rpl/r/rpl_sp.result'
+--- mysql-test/suite/rpl/r/rpl_sp.result	2010-12-19 17:07:28 +0000
++++ mysql-test/suite/rpl/r/rpl_sp.result	2012-08-24 08:06:16 +0000
+@@ -627,7 +627,7 @@
+ SET TIMESTAMP=t/*!*/;
+ create database mysqltest1
+ /*!*/;
+-use mysqltest1/*!*/;
++use `mysqltest1`/*!*/;
+ SET TIMESTAMP=t/*!*/;
+ create table t1 (a varchar(100))
+ /*!*/;
+@@ -840,7 +840,7 @@
+ SET TIMESTAMP=t/*!*/;
+ drop user "zedjzlcsjhd"@127.0.0.1
+ /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=t/*!*/;
+ drop function if exists f1
+ /*!*/;
+@@ -925,7 +925,7 @@
+ SET TIMESTAMP=t/*!*/;
+ create database mysqltest2
+ /*!*/;
+-use mysqltest2/*!*/;
++use `mysqltest2`/*!*/;
+ SET TIMESTAMP=t/*!*/;
+ create table t ( t integer )
+ /*!*/;
+@@ -943,7 +943,7 @@
+ return 0;
+ end
+ /*!*/;
+-use mysqltest/*!*/;
++use `mysqltest`/*!*/;
+ SET TIMESTAMP=t/*!*/;
+ SELECT `mysqltest2`.`f1`()
+ /*!*/;
+@@ -953,14 +953,14 @@
+ SET TIMESTAMP=t/*!*/;
+ drop database mysqltest2
+ /*!*/;
+-use test/*!*/;
++use `test`/*!*/;
+ SET TIMESTAMP=t/*!*/;
+ CREATE DEFINER=`root`@`localhost` PROCEDURE `mysqltestbug36570_p1`()
+ begin
+ select 1;
+ end
+ /*!*/;
+-use mysql/*!*/;
++use `mysql`/*!*/;
+ SET TIMESTAMP=t/*!*/;
+ CREATE DEFINER=`root`@`localhost` PROCEDURE `test`.` mysqltestbug36570_p2`( a int)
+ `label`:
+
+=== added file 'mysql-test/suite/rpl/t/rpl_mdev382.test'
+--- mysql-test/suite/rpl/t/rpl_mdev382.test	1970-01-01 00:00:00 +0000
++++ mysql-test/suite/rpl/t/rpl_mdev382.test	2012-08-24 10:32:46 +0000
+@@ -0,0 +1,257 @@
++--source include/have_innodb.inc
++--source include/not_windows.inc
++--source include/have_binlog_format_statement.inc
++--source include/master-slave.inc
++
++# MDEV-382: multiple SQL injections in replication code.
++
++# Test previous SQL injection attack against binlog for SAVEPOINT statement.
++# The test would cause syntax error on slave due to improper quoting of
++# the savepoint name.
++connection master;
++create table t1 (a int primary key) engine=innodb;
++create table t2 (a int primary key) engine=myisam;
++
++begin;
++insert into t1 values (1);
++SET sql_mode = 'ANSI_QUOTES';
++savepoint `a``; create database couldbebadthingshere; savepoint ``dummy`;
++insert into t1 values (2);
++insert into t2 values (1);
++SET sql_mode = '';
++rollback to savepoint `a``; create database couldbebadthingshere; savepoint ``dummy`;
++insert into t1 values (3);
++commit;
++
++--source include/show_binlog_events.inc
++
++# This failed due to syntax error in query when the bug was not fixed.
++sync_slave_with_master;
++connection slave;
++
++# Test some more combinations of ANSI_QUOTES and sql_quote_show_create
++connection master;
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++BEGIN;
++insert into t1 values(10);
++set sql_mode = 'ANSI_QUOTES';
++set sql_quote_show_create = 1;
++savepoint a;
++insert into t1 values(11);
++savepoint "a""a";
++insert into t1 values(12);
++set sql_quote_show_create = 0;
++savepoint b;
++insert into t1 values(13);
++savepoint "b""b";
++insert into t1 values(14);
++set sql_mode = '';
++set sql_quote_show_create = 1;
++savepoint c;
++insert into t1 values(15);
++savepoint `c``c`;
++insert into t1 values(16);
++set sql_quote_show_create = 0;
++savepoint d;
++insert into t1 values(17);
++savepoint `d``d`;
++insert into t1 values(18);
++COMMIT;
++set sql_quote_show_create = 1;
++
++--source include/show_binlog_events.inc
++
++--echo *** Test correct USE statement in SHOW BINLOG EVENTS ***
++connection master;
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++set sql_mode = 'ANSI_QUOTES';
++CREATE DATABASE "db1`; SELECT 'oops!'";
++use "db1`; SELECT 'oops!'";
++CREATE TABLE t1 (a INT PRIMARY KEY) engine=MyISAM;
++INSERT INTO t1 VALUES (1);
++set sql_mode = '';
++INSERT INTO t1 VALUES (2);
++set sql_mode = 'ANSI_QUOTES';
++--source include/show_binlog_events.inc
++set sql_mode = '';
++set sql_quote_show_create = 0;
++--source include/show_binlog_events.inc
++set sql_quote_show_create = 1;
++--source include/show_binlog_events.inc
++DROP TABLE t1;
++
++use test;
++
++--echo ***Test LOAD DATA INFILE with various identifiers that need correct quoting ***
++
++--let $load_file= $MYSQLTEST_VARDIR/tmp/f'le.txt
++--write_file $load_file
++'fo\\o','bar'
++EOF
++--exec chmod go+r "$load_file"
++
++use `db1``; SELECT 'oops!'`;
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++set timestamp=1000000000;
++CREATE TABLE `t``1` (`a``1` VARCHAR(4) PRIMARY KEY, `b``2` VARCHAR(3),
++    `c``3` VARCHAR(7));
++--replace_result $MYSQLTEST_VARDIR MYSQLTEST_VARDIR
++eval LOAD DATA INFILE '$MYSQLTEST_VARDIR/tmp/f''le.txt' INTO TABLE `t``1`
++  FIELDS TERMINATED BY ',' ESCAPED BY '\\\\' ENCLOSED BY ''''
++  LINES TERMINATED BY '\\n'
++  (`a``1`, @`b```) SET `b``2` = @`b```, `c``3` = concat('|', "b""a'z", "!");
++
++SELECT * FROM `t``1`;
++# Also test when code prefixes table name with database.
++truncate `t``1`;
++use test;
++--replace_result $MYSQLTEST_VARDIR MYSQLTEST_VARDIR
++eval LOAD DATA INFILE '$MYSQLTEST_VARDIR/tmp/f''le.txt'
++  INTO TABLE `db1``; SELECT 'oops!'`.`t``1`
++  FIELDS TERMINATED BY ',' ESCAPED BY '\\\\' ENCLOSED BY ''''
++  LINES TERMINATED BY '\\n'
++  (`a``1`, `b``2`) SET `c``3` = concat('|', "b""a'z", "!");
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++let $pos2= query_get_value(SHOW MASTER STATUS, Position, 1);
++
++--source include/show_binlog_events.inc
++let $MYSQLD_DATADIR= `select @@datadir`;
++--replace_regex /LOCAL INFILE '.*SQL_LOAD.*' INTO/LOCAL INFILE '<name>' INTO/
++--exec $MYSQL_BINLOG --short-form --start-position=$binlog_start --stop-position=$pos2 $MYSQLD_DATADIR/master-bin.000001
++
++sync_slave_with_master;
++connection slave;
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++connection master;
++
++DROP TABLE `db1``; SELECT 'oops!'`.`t``1`;
++--remove_file $load_file
++
++connection master;
++drop table t1,t2;
++
++
++--echo *** Test truncation of long SET expression in LOAD DATA ***
++CREATE TABLE t1 (a INT PRIMARY KEY, b VARCHAR(1000));
++--let $load_file= $MYSQLTEST_VARDIR/tmp/file.txt
++--write_file $load_file
++1,X
++2,A
++EOF
++--exec chmod go+r "$load_file"
++
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++# The bug was that the SET expression was truncated to 256 bytes, so test with
++# an expression longer than that.
++--replace_result $MYSQLTEST_VARDIR MYSQLTEST_VARDIR
++eval LOAD DATA INFILE '$load_file' INTO TABLE t1
++  FIELDS TERMINATED BY ','
++  (a, @b) SET b = CONCAT(@b, '| 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H123456789I123456789J123456789K123456789L123456789M123456789N123456789O123456789P123456789Q123456789R123456789123456789T123456789U123456789V123456789W123456789X123456789Y123456789Z123456789|', @b);
++
++SELECT * FROM t1 ORDER BY a;
++--source include/show_binlog_events.inc
++
++sync_slave_with_master;
++connection slave;
++SELECT * FROM t1 ORDER BY a;
++
++connection master;
++--remove_file $load_file
++DROP TABLE t1;
++
++
++--echo *** Test user variables whose names require correct quoting ***
++use `db1``; SELECT 'oops!'`;
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++CREATE TABLE t1 (a1 BIGINT PRIMARY KEY, a2 BIGINT, a3 BIGINT, a4 BIGINT UNSIGNED, b DOUBLE, c DECIMAL(65,10), d VARCHAR(100));
++INSERT INTO t1 VALUES (-9223372036854775808,42,9223372036854775807,18446744073709551615,-1234560123456789e110, -1234501234567890123456789012345678901234567890123456789.0123456789, REPEAT("x", 100));
++SELECT @`a``1`:=a1, @`a``2`:=a2, @`a``3`:=a3, @`a``4`:=a4, @`b```:=b, @```c`:=c, @```d```:=d FROM t1;
++INSERT INTO t1 VALUES (@`a``1`+1, @`a``2`*100, @`a``3`-1, @`a``4`-1, @`b```/2, @```c`, substr(@```d```, 2, 98));
++let $pos2= query_get_value(SHOW MASTER STATUS, Position, 1);
++
++--source include/show_binlog_events.inc
++
++--exec $MYSQL_BINLOG --short-form --start-position=$binlog_start --stop-position=$pos2 $MYSQLD_DATADIR/master-bin.000001
++
++sync_slave_with_master;
++connection slave;
++SELECT * FROM `db1``; SELECT 'oops!'`.t1 ORDER BY a1;
++
++connection master;
++DROP TABLE t1;
++
++
++--echo *** Test correct quoting of DELETE FROM statement binlogged for HEAP table that is emptied due to server restart
++
++# Let's keep the slave stopped during master restart, to avoid any potential
++# races between slave reconnect and master restart.
++connection slave;
++--source include/stop_slave.inc
++
++connection master;
++CREATE TABLE `db1``; SELECT 'oops!'`.`t``1` (`a``` INT PRIMARY KEY) ENGINE=heap;
++INSERT INTO `db1``; SELECT 'oops!'`.`t``1` VALUES (1), (2), (5);
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1` ORDER BY 1;
++
++# Restart the master mysqld.
++# This will cause an implicit truncation of the memory-based table, which will
++# cause logging of an explicit DELETE FROM to binlog.
++--write_file $MYSQLTEST_VARDIR/tmp/mysqld.1.expect
++wait-rpl_mdev382.test
++EOF
++
++--shutdown_server 30
++
++--remove_file $MYSQLTEST_VARDIR/tmp/mysqld.1.expect
++--write_file $MYSQLTEST_VARDIR/tmp/mysqld.1.expect
++restart-rpl_mdev382.test
++EOF
++
++connection default;
++--enable_reconnect
++--source include/wait_until_connected_again.inc
++# rpl_end.inc needs to use the connection server_1
++connection server_1;
++--enable_reconnect
++--source include/wait_until_connected_again.inc
++connection master;
++--enable_reconnect
++--source include/wait_until_connected_again.inc
++set timestamp=1000000000;
++
++--echo # The table should be empty on the master.
++let $binlog_file= master-bin.000002;
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++
++--echo # The DELETE statement should be correctly quoted
++--source include/show_binlog_events.inc
++
++connection slave;
++--source include/start_slave.inc
++
++connection master;
++sync_slave_with_master;
++connection slave;
++--echo # The table should be empty on the slave also.
++SELECT * FROM `db1``; SELECT 'oops!'`.`t``1`;
++
++connection master;
++DROP TABLE `db1``; SELECT 'oops!'`.`t``1`;
++sync_slave_with_master;
++
++
++connection master;
++use test;
++DROP DATABASE `db1``; SELECT 'oops!'`;
++
++--echo *** Test correct quoting of mysqlbinlog --rewrite-db option ***
++CREATE TABLE t1 (a INT PRIMARY KEY);
++let $binlog_start= query_get_value(SHOW MASTER STATUS, Position, 1);
++INSERT INTO t1 VALUES(1);
++--source include/show_binlog_events.inc
++let $pos2= query_get_value(SHOW MASTER STATUS, Position, 1);
++--exec $MYSQL_BINLOG --short-form --start-position=$binlog_start --stop-position=$pos2 --rewrite-db='test->ts`et' $MYSQLD_DATADIR/master-bin.000002
++DROP TABLE t1;
++
++--source include/rpl_end.inc
+
+=== modified file 'mysys/mf_iocache2.c'
+--- mysys/mf_iocache2.c	2011-11-21 17:13:14 +0000
++++ mysys/mf_iocache2.c	2012-08-24 10:32:46 +0000
+@@ -284,6 +284,40 @@
+ }
+ 
+ 
++size_t
++my_b_write_backtick_quote(IO_CACHE *info, const char *str, size_t len)
++{
++  const uchar *start;
++  const uchar *p= (const uchar *)str;
++  const uchar *end= p + len;
++  size_t count;
++  size_t total= 0;
++
++  if (my_b_write(info, (uchar *)"`", 1))
++    return (size_t)-1;
++  ++total;
++  for (;;)
++  {
++    start= p;
++    while (p < end && *p != '`')
++      ++p;
++    count= p - start;
++    if (count && my_b_write(info, start, count))
++      return (size_t)-1;
++    total+= count;
++    if (p >= end)
++      break;
++    if (my_b_write(info, (uchar *)"``", 2))
++      return (size_t)-1;
++    total+= 2;
++    ++p;
++  }
++  if (my_b_write(info, (uchar *)"`", 1))
++    return (size_t)-1;
++  ++total;
++  return total;
++}
++
+ /*
+   Simple printf version.  Supports '%s', '%d', '%u', "%ld" and "%lu"
+   Used for logging in MySQL
+@@ -308,6 +342,7 @@
+   uint minimum_width_sign;
+   uint precision; /* as yet unimplemented for anything but %b */
+   my_bool is_zero_padded;
++  my_bool backtick_quoting;
+ 
+   /*
+     Store the location of the beginning of a format directive, for the
+@@ -342,6 +377,7 @@
+     fmt++;
+ 
+     is_zero_padded= FALSE;
++    backtick_quoting= FALSE;
+     minimum_width_sign= 1;
+     minimum_width= 0;
+     precision= 0;
+@@ -354,6 +390,8 @@
+         minimum_width_sign= -1; fmt++; goto process_flags;
+       case '0':
+         is_zero_padded= TRUE; fmt++; goto process_flags;
++      case '`':
++        backtick_quoting= TRUE; fmt++; goto process_flags;
+       case '#':
+         /** @todo Implement "#" conversion flag. */  fmt++; goto process_flags;
+       case ' ':
+@@ -397,9 +435,19 @@
+       reg2 char *par = va_arg(args, char *);
+       size_t length2 = strlen(par);
+       /* TODO: implement precision */
+-      out_length+= length2;
+-      if (my_b_write(info, (uchar*) par, length2))
+-	goto err;
++      if (backtick_quoting)
++      {
++        size_t total= my_b_write_backtick_quote(info, par, length2);
++        if (total == (size_t)-1)
++          goto err;
++        out_length+= total;
++      }
++      else
++      {
++        out_length+= length2;
++        if (my_b_write(info, (uchar*) par, length2))
++          goto err;
++      }
+     }
+     else if (*fmt == 'b')                       /* Sized buffer parameter, only precision makes sense */
+     {
+
+=== modified file 'sql/ha_ndbcluster_binlog.cc'
+--- sql/ha_ndbcluster_binlog.cc	2011-12-11 09:34:44 +0000
++++ sql/ha_ndbcluster_binlog.cc	2012-08-24 12:02:32 +0000
+@@ -1268,7 +1268,9 @@
+     DBUG_RETURN(0);
+   }
+ 
+-  char tmp_buf2[FN_REFLEN];
++  char tmp_buf2_mem[FN_REFLEN];
++  String tmp_buf2(tmp_buf2_mem, sizeof(tmp_buf2_mem), system_charset_info);
++  tmp_buf2.length(0);
+   const char *type_str;
+   switch (type)
+   {
+@@ -1277,17 +1279,24 @@
+     if (thd->lex->sql_command ==  SQLCOM_DROP_DB)
+       DBUG_RETURN(0);
+     /* redo the drop table query as is may contain several tables */
+-    query= tmp_buf2;
+-    query_length= (uint) (strxmov(tmp_buf2, "drop table `",
+-                                  table_name, "`", NullS) - tmp_buf2);
++    tmp_buf2.append(STRING_WITH_LEN("drop table "));
++    append_identifier(thd, &tmp_buf2, table_name, strlen(table_name));
++    query= tmp_buf2.c_ptr_safe();
++    query_length= tmp_buf2.length();
+     type_str= "drop table";
+     break;
+   case SOT_RENAME_TABLE:
+     /* redo the rename table query as is may contain several tables */
+-    query= tmp_buf2;
+-    query_length= (uint) (strxmov(tmp_buf2, "rename table `",
+-                                  db, ".", table_name, "` to `",
+-                                  new_db, ".", new_table_name, "`", NullS) - tmp_buf2);
++    tmp_buf2.append(STRING_WITH_LEN("rename table "));
++    append_identifier(thd, &tmp_buf2, db, strlen(db));
++    tmp_buf2.append(STRING_WITH_LEN("."));
++    append_identifier(thd, &tmp_buf2, table_name, strlen(table_name));
++    tmp_buf2.append(STRING_WITH_LEN(" to "));
++    append_identifier(thd, &tmp_buf2, new_db, strlen(new_db));
++    tmp_buf2.append(STRING_WITH_LEN("."));
++    append_identifier(thd, &tmp_buf2, new_table_name, strlen(new_table_name));
++    query= tmp_buf2.c_ptr_safe();
++    query_length= tmp_buf2.length();
+     type_str= "rename table";
+     break;
+   case SOT_CREATE_TABLE:
+
+=== modified file 'sql/item.cc'
+--- sql/item.cc	2012-06-08 17:15:01 +0000
++++ sql/item.cc	2012-08-24 12:02:32 +0000
+@@ -942,15 +942,31 @@
+   if (!my_charset_same(cs, system_charset_info))
+   {
+     size_t res_length;
+-    name= sql_strmake_with_convert(str, name_length= length, cs,
++    name= sql_strmake_with_convert(str, length, cs,
+ 				   MAX_ALIAS_NAME, system_charset_info,
+ 				   &res_length);
++    name_length= res_length;
+   }
+   else
+     name= sql_strmake(str, (name_length= min(length,MAX_ALIAS_NAME)));
+ }
+ 
+ 
++void Item::set_name_no_truncate(const char *str, uint length, CHARSET_INFO *cs)
++{
++  if (!my_charset_same(cs, system_charset_info))
++  {
++    size_t res_length;
++    name= sql_strmake_with_convert(str, length, cs,
++				   UINT_MAX, system_charset_info,
++				   &res_length);
++    name_length= res_length;
++  }
++  else
++    name= sql_strmake(str, (name_length= length));
++}
++
++
+ void Item::set_name_for_rollback(THD *thd, const char *str, uint length,
+                                  CHARSET_INFO *cs)
+ {
+
+=== modified file 'sql/item.h'
+--- sql/item.h	2012-05-20 12:57:29 +0000
++++ sql/item.h	2012-08-24 12:02:32 +0000
+@@ -620,6 +620,7 @@
+ #endif
+   }		/*lint -e1509 */
+   void set_name(const char *str, uint length, CHARSET_INFO *cs);
++  void set_name_no_truncate(const char *str, uint length, CHARSET_INFO *cs);
+   void set_name_for_rollback(THD *thd, const char *str, uint length,
+                              CHARSET_INFO *cs);
+   void rename(char *new_name);
+
+=== modified file 'sql/item_func.cc'
+--- sql/item_func.cc	2012-06-18 18:38:11 +0000
++++ sql/item_func.cc	2012-08-24 12:02:32 +0000
+@@ -4913,7 +4913,7 @@
+ void Item_func_get_user_var::print(String *str, enum_query_type query_type)
+ {
+   str->append(STRING_WITH_LEN("(@"));
+-  str->append(name.str,name.length);
++  append_identifier(current_thd, str, name.str, name.length);
+   str->append(')');
+ }
+ 
+@@ -5011,10 +5011,10 @@
+ }
+ 
+ 
+-void Item_user_var_as_out_param::print(String *str, enum_query_type query_type)
++void Item_user_var_as_out_param::print_for_load(THD *thd, String *str)
+ {
+   str->append('@');
+-  str->append(name.str,name.length);
++  append_identifier(thd, str, name.str, name.length);
+ }
+ 
+ 
+
+=== modified file 'sql/item_func.h'
+--- sql/item_func.h	2011-12-19 20:55:32 +0000
++++ sql/item_func.h	2012-08-24 12:02:32 +0000
+@@ -1582,7 +1582,7 @@
+   my_decimal *val_decimal(my_decimal *decimal_buffer);
+   /* fix_fields() binds variable name with its entry structure */
+   bool fix_fields(THD *thd, Item **ref);
+-  virtual void print(String *str, enum_query_type query_type);
++  void print_for_load(THD *thd, String *str);
+   void set_null_value(CHARSET_INFO* cs);
+   void set_value(const char *str, uint length, CHARSET_INFO* cs);
+ };
+
+=== modified file 'sql/log.cc'
+--- sql/log.cc	2012-05-20 12:57:29 +0000
++++ sql/log.cc	2012-08-24 12:02:32 +0000
+@@ -39,6 +39,7 @@
+ 
+ #include <mysql/plugin.h>
+ #include "debug_sync.h"
++#include "sql_show.h"
+ 
+ /* max size of the log message */
+ #define MAX_LOG_BUFFER_SIZE 1024
+@@ -1794,9 +1795,8 @@
+ 
+   String log_query;
+   if (log_query.append(STRING_WITH_LEN("SAVEPOINT ")) ||
+-      log_query.append("`") ||
+-      log_query.append(thd->lex->ident.str, thd->lex->ident.length) ||
+-      log_query.append("`"))
++      append_identifier(thd, &log_query,
++                        thd->lex->ident.str, thd->lex->ident.length))
+     DBUG_RETURN(1);
+   int errcode= query_error_code(thd, thd->killed == NOT_KILLED);
+   Query_log_event qinfo(thd, log_query.ptr(), log_query.length(),
+@@ -1818,9 +1818,8 @@
+   {
+     String log_query;
+     if (log_query.append(STRING_WITH_LEN("ROLLBACK TO ")) ||
+-        log_query.append("`") ||
+-        log_query.append(thd->lex->ident.str, thd->lex->ident.length) ||
+-        log_query.append("`"))
++        append_identifier(thd, &log_query,
++                          thd->lex->ident.str, thd->lex->ident.length))
+       DBUG_RETURN(1);
+     int errcode= query_error_code(thd, thd->killed == NOT_KILLED);
+     Query_log_event qinfo(thd, log_query.ptr(), log_query.length(),
+
+=== modified file 'sql/log_event.cc'
+--- sql/log_event.cc	2012-06-01 12:56:47 +0000
++++ sql/log_event.cc	2012-08-24 12:02:32 +0000
+@@ -34,6 +34,7 @@
+ #include "rpl_utility.h"
+ #include "rpl_record.h"
+ #include <my_dir.h>
++#include "sql_show.h"
+ 
+ #endif /* MYSQL_CLIENT */
+ 
+@@ -457,29 +458,28 @@
+   pretty_print_str()
+ */
+ 
+-static char *pretty_print_str(char *packet, const char *str, int len)
++static void
++pretty_print_str(String *packet, const char *str, int len)
+ {
+   const char *end= str + len;
+-  char *pos= packet;
+-  *pos++= '\'';
++  packet->append(STRING_WITH_LEN("'"));
+   while (str < end)
+   {
+     char c;
+     switch ((c=*str++)) {
+-    case '\n': *pos++= '\\'; *pos++= 'n'; break;
+-    case '\r': *pos++= '\\'; *pos++= 'r'; break;
+-    case '\\': *pos++= '\\'; *pos++= '\\'; break;
+-    case '\b': *pos++= '\\'; *pos++= 'b'; break;
+-    case '\t': *pos++= '\\'; *pos++= 't'; break;
+-    case '\'': *pos++= '\\'; *pos++= '\''; break;
+-    case 0   : *pos++= '\\'; *pos++= '0'; break;
++    case '\n': packet->append(STRING_WITH_LEN("\\n")); break;
++    case '\r': packet->append(STRING_WITH_LEN("\\r")); break;
++    case '\\': packet->append(STRING_WITH_LEN("\\\\")); break;
++    case '\b': packet->append(STRING_WITH_LEN("\\b")); break;
++    case '\t': packet->append(STRING_WITH_LEN("\\t")); break;
++    case '\'': packet->append(STRING_WITH_LEN("\\'")); break;
++    case 0   : packet->append(STRING_WITH_LEN("\\0")); break;
+     default:
+-      *pos++= c;
++      packet->append(&c, 1);
+       break;
+     }
+   }
+-  *pos++= '\'';
+-  return pos;
++  packet->append(STRING_WITH_LEN("'"));
+ }
+ #endif /* !MYSQL_CLIENT */
+ 
+@@ -904,7 +904,7 @@
+   Log_event::pack_info()
+ */
+ 
+-void Log_event::pack_info(Protocol *protocol)
++void Log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   protocol->store("", &my_charset_bin);
+ }
+@@ -913,7 +913,8 @@
+ /**
+   Only called by SHOW BINLOG EVENTS
+ */
+-int Log_event::net_send(Protocol *protocol, const char* log_name, my_off_t pos)
++int Log_event::net_send(THD *thd, Protocol *protocol, const char* log_name,
++                        my_off_t pos)
+ {
+   const char *p= strrchr(log_name, FN_LIBCHAR);
+   const char *event_type;
+@@ -927,7 +928,7 @@
+   protocol->store(event_type, strlen(event_type), &my_charset_bin);
+   protocol->store((uint32) server_id);
+   protocol->store((ulonglong) log_pos);
+-  pack_info(protocol);
++  pack_info(thd, protocol);
+   return protocol->write();
+ }
+ #endif /* HAVE_REPLICATION */
+@@ -2428,27 +2429,22 @@
+     show the catalog ??
+ */
+ 
+-void Query_log_event::pack_info(Protocol *protocol)
++void Query_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   // TODO: show the catalog ??
+-  char *buf, *pos;
+-  if (!(buf= (char*) my_malloc(9 + db_len + q_len, MYF(MY_WME))))
+-    return;
+-  pos= buf;
++  char buf_mem[1024];
++  String buf(buf_mem, sizeof(buf_mem), system_charset_info);
++  buf.real_alloc(9 + db_len + q_len);
+   if (!(flags & LOG_EVENT_SUPPRESS_USE_F)
+       && db && db_len)
+   {
+-    pos= strmov(buf, "use `");
+-    memcpy(pos, db, db_len);
+-    pos= strmov(pos+db_len, "`; ");
++    buf.append(STRING_WITH_LEN("use "));
++    append_identifier(thd, &buf, db, db_len);
++    buf.append("; ");
+   }
+   if (query && q_len)
+-  {
+-    memcpy(pos, query, q_len);
+-    pos+= q_len;
+-  }
+-  protocol->store(buf, pos-buf, &my_charset_bin);
+-  my_free(buf, MYF(MY_ALLOW_ZERO_PTR));
++    buf.append(query, q_len);
++  protocol->store(&buf);
+ }
+ #endif
+ 
+@@ -3233,11 +3229,17 @@
+   }
+   else if (db)
+   {
++    /* Room for expand ` to `` + initial/final ` + \0 */
++    char buf[FN_REFLEN*2+3];
++
+     different_db= memcmp(print_event_info->db, db, db_len + 1);
+     if (different_db)
+       memcpy(print_event_info->db, db, db_len + 1);
+     if (db[0] && different_db) 
+-      my_b_printf(file, "use %s%s\n", db, print_event_info->delimiter);
++    {
++      my_snprintf(buf, sizeof(buf), "%`s", db);
++      my_b_printf(file, "use %s%s\n", buf, print_event_info->delimiter);
++    }
+   }
+ 
+   end=int10_to_str((long) when, strmov(buff,"SET TIMESTAMP="),10);
+@@ -3859,7 +3861,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Start_log_event_v3::pack_info(Protocol *protocol)
++void Start_log_event_v3::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[12 + ST_SERVER_VER_LEN + 14 + 22], *pos;
+   pos= strmov(buf, "Server ver: ");
+@@ -4635,131 +4637,115 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-uint Load_log_event::get_query_buffer_length()
+-{
+-  return
+-    5 + db_len + 3 +                        // "use DB; "
+-    18 + fname_len + 2 +                    // "LOAD DATA INFILE 'file''"
+-    11 +                                    // "CONCURRENT "
+-    7 +					    // LOCAL
+-    9 +                                     // " REPLACE or IGNORE "
+-    13 + table_name_len*2 +                 // "INTO TABLE `table`"
+-    21 + sql_ex.field_term_len*4 + 2 +      // " FIELDS TERMINATED BY 'str'"
+-    23 + sql_ex.enclosed_len*4 + 2 +        // " OPTIONALLY ENCLOSED BY 'str'"
+-    12 + sql_ex.escaped_len*4 + 2 +         // " ESCAPED BY 'str'"
+-    21 + sql_ex.line_term_len*4 + 2 +       // " LINES TERMINATED BY 'str'"
+-    19 + sql_ex.line_start_len*4 + 2 +      // " LINES STARTING BY 'str'"
+-    15 + 22 +                               // " IGNORE xxx  LINES"
+-    3 + (num_fields-1)*2 + field_block_len; // " (field1, field2, ...)"
+-}
+-
+-
+-void Load_log_event::print_query(bool need_db, const char *cs, char *buf,
+-                                 char **end, char **fn_start, char **fn_end)
+-{
+-  char *pos= buf;
+-
++void Load_log_event::print_query(THD *thd, bool need_db, const char *cs,
++                                 String *buf, my_off_t *fn_start,
++                                 my_off_t *fn_end, const char *qualify_db)
++{
+   if (need_db && db && db_len)
+   {
+-    pos= strmov(pos, "use `");
+-    memcpy(pos, db, db_len);
+-    pos= strmov(pos+db_len, "`; ");
++    buf->append(STRING_WITH_LEN("use "));
++    append_identifier(thd, buf, db, db_len);
++    buf->append(STRING_WITH_LEN("; "));
+   }
+ 
+-  pos= strmov(pos, "LOAD DATA ");
++  buf->append(STRING_WITH_LEN("LOAD DATA "));
+ 
+   if (thd->lex->lock_option == TL_WRITE_CONCURRENT_INSERT)
+-    pos= strmov(pos, "CONCURRENT ");
++    buf->append(STRING_WITH_LEN("CONCURRENT "));
+ 
+   if (fn_start)
+-    *fn_start= pos;
++    *fn_start= buf->length();
+ 
+   if (check_fname_outside_temp_buf())
+-    pos= strmov(pos, "LOCAL ");
+-  pos= strmov(pos, "INFILE '");
+-  memcpy(pos, fname, fname_len);
+-  pos= strmov(pos+fname_len, "' ");
++    buf->append(STRING_WITH_LEN("LOCAL "));
++  buf->append(STRING_WITH_LEN("INFILE '"));
++  buf->append_for_single_quote(fname, fname_len);
++  buf->append(STRING_WITH_LEN("' "));
+ 
+   if (sql_ex.opt_flags & REPLACE_FLAG)
+-    pos= strmov(pos, "REPLACE ");
++    buf->append(STRING_WITH_LEN("REPLACE "));
+   else if (sql_ex.opt_flags & IGNORE_FLAG)
+-    pos= strmov(pos, "IGNORE ");
++    buf->append(STRING_WITH_LEN("IGNORE "));
+ 
+-  pos= strmov(pos ,"INTO");
++  buf->append(STRING_WITH_LEN("INTO"));
+ 
+   if (fn_end)
+-    *fn_end= pos;
++    *fn_end= buf->length();
+ 
+-  pos= strmov(pos ," TABLE `");
+-  memcpy(pos, table_name, table_name_len);
+-  pos+= table_name_len;
++  buf->append(STRING_WITH_LEN(" TABLE "));
++  if (qualify_db)
++  {
++    append_identifier(thd, buf, qualify_db, strlen(qualify_db));
++    buf->append(STRING_WITH_LEN("."));
++  }
++  append_identifier(thd, buf, table_name, table_name_len);
+ 
+   if (cs != NULL)
+   {
+-    pos= strmov(pos ,"` CHARACTER SET ");
+-    pos= strmov(pos ,  cs);
++    buf->append(STRING_WITH_LEN(" CHARACTER SET "));
++    buf->append(cs, strlen(cs));
+   }
+-  else
+-    pos= strmov(pos, "`");
+ 
+   /* We have to create all optional fields as the default is not empty */
+-  pos= strmov(pos, " FIELDS TERMINATED BY ");
+-  pos= pretty_print_str(pos, sql_ex.field_term, sql_ex.field_term_len);
++  buf->append(STRING_WITH_LEN(" FIELDS TERMINATED BY "));
++  pretty_print_str(buf, sql_ex.field_term, sql_ex.field_term_len);
+   if (sql_ex.opt_flags & OPT_ENCLOSED_FLAG)
+-    pos= strmov(pos, " OPTIONALLY ");
+-  pos= strmov(pos, " ENCLOSED BY ");
+-  pos= pretty_print_str(pos, sql_ex.enclosed, sql_ex.enclosed_len);
+-
+-  pos= strmov(pos, " ESCAPED BY ");
+-  pos= pretty_print_str(pos, sql_ex.escaped, sql_ex.escaped_len);
+-
+-  pos= strmov(pos, " LINES TERMINATED BY ");
+-  pos= pretty_print_str(pos, sql_ex.line_term, sql_ex.line_term_len);
++    buf->append(STRING_WITH_LEN(" OPTIONALLY "));
++  buf->append(STRING_WITH_LEN(" ENCLOSED BY "));
++  pretty_print_str(buf, sql_ex.enclosed, sql_ex.enclosed_len);
++
++  buf->append(STRING_WITH_LEN(" ESCAPED BY "));
++  pretty_print_str(buf, sql_ex.escaped, sql_ex.escaped_len);
++
++  buf->append(STRING_WITH_LEN(" LINES TERMINATED BY "));
++  pretty_print_str(buf, sql_ex.line_term, sql_ex.line_term_len);
+   if (sql_ex.line_start_len)
+   {
+-    pos= strmov(pos, " STARTING BY ");
+-    pos= pretty_print_str(pos, sql_ex.line_start, sql_ex.line_start_len);
++    buf->append(STRING_WITH_LEN(" STARTING BY "));
++    pretty_print_str(buf, sql_ex.line_start, sql_ex.line_start_len);
+   }
+ 
+   if ((long) skip_lines > 0)
+   {
+-    pos= strmov(pos, " IGNORE ");
+-    pos= longlong10_to_str((longlong) skip_lines, pos, 10);
+-    pos= strmov(pos," LINES ");    
++    char skipbuf[22];
++    buf->append(STRING_WITH_LEN(" IGNORE "));
++    longlong10_to_str((longlong) skip_lines, skipbuf, 10);
++    buf->append(skipbuf);
++    buf->append(STRING_WITH_LEN(" LINES "));
+   }
+ 
+   if (num_fields)
+   {
+     uint i;
+     const char *field= fields;
+-    pos= strmov(pos, " (");
++    buf->append(STRING_WITH_LEN(" ("));
+     for (i = 0; i < num_fields; i++)
+     {
+       if (i)
+       {
+-        *pos++= ' ';
+-        *pos++= ',';
++        /*
++          Yes, the space and comma is reversed here. But this is mostly dead
++          code, at most used when reading really old binlogs from old servers,
++          so better just leave it as is...
++        */
++        buf->append(STRING_WITH_LEN(" ,"));
+       }
+-      memcpy(pos, field, field_lens[i]);
+-      pos+=   field_lens[i];
++      append_identifier(thd, buf, field, field_lens[i]);
+       field+= field_lens[i]  + 1;
+     }
+-    *pos++= ')';
++    buf->append(STRING_WITH_LEN(")"));
+   }
+-
+-  *end= pos;
+ }
+ 
+ 
+-void Load_log_event::pack_info(Protocol *protocol)
++void Load_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+-  char *buf, *end;
++  char query_buffer[1024];
++  String query_str(query_buffer, sizeof(query_buffer), system_charset_info);
+ 
+-  if (!(buf= (char*) my_malloc(get_query_buffer_length(), MYF(MY_WME))))
+-    return;
+-  print_query(TRUE, NULL, buf, &end, 0, 0);
+-  protocol->store(buf, end-buf, &my_charset_bin);
+-  my_free(buf, MYF(0));
++  query_str.length(0);
++  print_query(thd, TRUE, NULL, &query_str, 0, 0, NULL);
++  protocol->store(query_str.ptr(), query_str.length(), &my_charset_bin);
+ }
+ #endif /* defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT) */
+ 
+@@ -5026,7 +5012,7 @@
+   else if (sql_ex.opt_flags & IGNORE_FLAG)
+     my_b_printf(&cache,"IGNORE ");
+   
+-  my_b_printf(&cache, "INTO TABLE `%s`", table_name);
++  my_b_printf(&cache, "INTO TABLE %`s", table_name);
+   my_b_printf(&cache, " FIELDS TERMINATED BY ");
+   pretty_print_str(&cache, sql_ex.field_term, sql_ex.field_term_len);
+ 
+@@ -5215,16 +5201,20 @@
+     else
+     {
+       char llbuff[22];
+-      char *end;
+       enum enum_duplicates handle_dup;
+       bool ignore= 0;
++      char query_buffer[1024];
++      String query_str(query_buffer, sizeof(query_buffer), system_charset_info);
+       char *load_data_query;
+ 
++      query_str.length(0);
+       /*
+         Forge LOAD DATA INFILE query which will be used in SHOW PROCESS LIST
+         and written to slave's binlog if binlogging is on.
+       */
+-      if (!(load_data_query= (char *)thd->alloc(get_query_buffer_length() + 1)))
++      print_query(thd, FALSE, NULL, &query_str, NULL, NULL, NULL);
++      if (!(load_data_query= (char *)thd->strmake(query_str.ptr(),
++                                                  query_str.length())))
+       {
+         /*
+           This will set thd->fatal_error in case of OOM. So we surely will notice
+@@ -5233,9 +5223,7 @@
+         goto error;
+       }
+ 
+-      print_query(FALSE, NULL, load_data_query, &end, NULL, NULL);
+-      *end= 0;
+-      thd->set_query(load_data_query, (uint) (end - load_data_query));
++      thd->set_query(load_data_query, (uint) (query_str.length()));
+ 
+       if (sql_ex.opt_flags & REPLACE_FLAG)
+       {
+@@ -5400,7 +5388,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Rotate_log_event::pack_info(Protocol *protocol)
++void Rotate_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf1[256], buf[22];
+   String tmp(buf1, sizeof(buf1), log_cs);
+@@ -5618,7 +5606,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Intvar_log_event::pack_info(Protocol *protocol)
++void Intvar_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[256], *pos;
+   pos= strmake(buf, get_var_type_name(), sizeof(buf)-23);
+@@ -5768,7 +5756,7 @@
+ **************************************************************************/
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Rand_log_event::pack_info(Protocol *protocol)
++void Rand_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf1[256], *pos;
+   pos= strmov(buf1,"rand_seed1=");
+@@ -5867,7 +5855,7 @@
+ **************************************************************************/
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Xid_log_event::pack_info(Protocol *protocol)
++void Xid_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[128], *pos;
+   pos= strmov(buf, "COMMIT /* xid=");
+@@ -5955,69 +5943,109 @@
+ **************************************************************************/
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void User_var_log_event::pack_info(Protocol* protocol)
++static bool
++user_var_append_name_part(THD *thd, String *buf,
++                          const char *name, size_t name_len)
+ {
+-  char *buf= 0;
+-  uint val_offset= 4 + name_len;
+-  uint event_len= val_offset;
++  return buf->append("@") ||
++    append_identifier(thd, buf, name, name_len) ||
++    buf->append("=");
++}
+ 
++void User_var_log_event::pack_info(THD *thd, Protocol* protocol)
++{
+   if (is_null)
+   {
+-    if (!(buf= (char*) my_malloc(val_offset + 5, MYF(MY_WME))))
++    char buf_mem[FN_REFLEN+7];
++    String buf(buf_mem, sizeof(buf_mem), system_charset_info);
++    buf.length(0);
++    if (user_var_append_name_part(thd, &buf, name, name_len) ||
++        buf.append("NULL"))
+       return;
+-    strmov(buf + val_offset, "NULL");
+-    event_len= val_offset + 4;
++    protocol->store(buf.ptr(), buf.length(), &my_charset_bin);
+   }
+   else
+   {
+     switch (type) {
+     case REAL_RESULT:
++    {
+       double real_val;
++      char buf2[FLOATING_POINT_BUFFER];
++      char buf_mem[FN_REFLEN + FLOATING_POINT_BUFFER];
++      String buf(buf_mem, sizeof(buf_mem), system_charset_info);
+       float8get(real_val, val);
+-      if (!(buf= (char*) my_malloc(val_offset + FLOATING_POINT_BUFFER,
+-                                   MYF(MY_WME))))
+-        return;
+-      event_len+= my_sprintf(buf + val_offset,
+-			     (buf + val_offset, "%.14g", real_val));
++      buf.length(0);
++      my_sprintf(buf2, (buf2, "%.14g", real_val));
++      if (user_var_append_name_part(thd, &buf, name, name_len) ||
++          buf.append(buf2))
++         return;
++      protocol->store(buf.ptr(), buf.length(), &my_charset_bin);
+       break;
++    }
+     case INT_RESULT:
+-      if (!(buf= (char*) my_malloc(val_offset + 22, MYF(MY_WME))))
++    {
++      char buf2[22];
++      char buf_mem[FN_REFLEN + 22];
++      String buf(buf_mem, sizeof(buf_mem), system_charset_info);
++      buf.length(0);
++      if (user_var_append_name_part(thd, &buf, name, name_len) ||
++          buf.append(buf2, longlong10_to_str(uint8korr(val), buf2, -10)-buf2))
+         return;
+-      event_len= longlong10_to_str(uint8korr(val), buf + val_offset,-10)-buf;
++      protocol->store(buf.ptr(), buf.length(), &my_charset_bin);
+       break;
++    }
+     case DECIMAL_RESULT:
+     {
+-      if (!(buf= (char*) my_malloc(val_offset + DECIMAL_MAX_STR_LENGTH,
+-                                   MYF(MY_WME))))
+-        return;
+-      String str(buf+val_offset, DECIMAL_MAX_STR_LENGTH, &my_charset_bin);
++      char buf_mem[FN_REFLEN + DECIMAL_MAX_STR_LENGTH];
++      String buf(buf_mem, sizeof(buf_mem), system_charset_info);
++      char buf2[DECIMAL_MAX_STR_LENGTH+1];
++      String str(buf2, sizeof(buf2), &my_charset_bin);
+       my_decimal dec;
++      buf.length(0);
+       binary2my_decimal(E_DEC_FATAL_ERROR, (uchar*) (val+2), &dec, val[0],
+                         val[1]);
+       my_decimal2string(E_DEC_FATAL_ERROR, &dec, 0, 0, 0, &str);
+-      event_len= str.length() + val_offset;
++      if (user_var_append_name_part(thd, &buf, name, name_len) ||
++          buf.append(buf2))
++        return;
++      protocol->store(buf.ptr(), buf.length(), &my_charset_bin);
+       break;
+     } 
+     case STRING_RESULT:
++    {
+       /* 15 is for 'COLLATE' and other chars */
+-      buf= (char*) my_malloc(event_len+val_len*2+1+2*MY_CS_NAME_SIZE+15,
+-                             MYF(MY_WME));
++      char buf_mem[FN_REFLEN + 512 + 1 + 2*MY_CS_NAME_SIZE+15];
++      String buf(buf_mem, sizeof(buf_mem), system_charset_info);
+       CHARSET_INFO *cs;
+-      if (!buf)
+-        return;
++      buf.length(0);
+       if (!(cs= get_charset(charset_number, MYF(0))))
+       {
+-        strmov(buf+val_offset, "???");
+-        event_len+= 3;
++        if (buf.append("???"))
++          return;
+       }
+       else
+       {
+-        char *p= strxmov(buf + val_offset, "_", cs->csname, " ", NullS);
+-        p= str_to_hex(p, val, val_len);
+-        p= strxmov(p, " COLLATE ", cs->name, NullS);
+-        event_len= p-buf;
++        size_t old_len;
++        char *beg, *end;
++        if (user_var_append_name_part(thd, &buf, name, name_len) ||
++            buf.append("_") ||
++            buf.append(cs->csname) ||
++            buf.append(" "))
++          return;
++        old_len= buf.length();
++        if (buf.reserve(old_len + val_len*2 + 2 + sizeof(" COLLATE ") +
++                        MY_CS_NAME_SIZE))
++          return;
++        beg= const_cast<char *>(buf.ptr()) + old_len;
++        end= str_to_hex(beg, val, val_len);
++        buf.length(old_len + (end - beg));
++        if (buf.append(" COLLATE ") ||
++            buf.append(cs->name))
++          return;
+       }
++      protocol->store(buf.ptr(), buf.length(), &my_charset_bin);
+       break;
++    }
+     case ROW_RESULT:
+     case IMPOSSIBLE_RESULT:
+     default:
+@@ -6025,13 +6053,6 @@
+       return;
+     }
+   }
+-  buf[0]= '@';
+-  buf[1]= '`';
+-  memcpy(buf+2, name, name_len);
+-  buf[2+name_len]= '`';
+-  buf[3+name_len]= '=';
+-  protocol->store(buf, event_len, &my_charset_bin);
+-  my_free(buf, MYF(0));
+ }
+ #endif /* !MYSQL_CLIENT */
+ 
+@@ -6148,9 +6169,8 @@
+     my_b_printf(&cache, "\tUser_var\n");
+   }
+ 
+-  my_b_printf(&cache, "SET @`");
+-  my_b_write(&cache, (uchar*) name, (uint) (name_len));
+-  my_b_printf(&cache, "`");
++  my_b_printf(&cache, "SET @");
++  my_b_write_backtick_quote(&cache, name, name_len);
+ 
+   if (is_null)
+   {
+@@ -6223,7 +6243,7 @@
+         */
+         my_b_printf(&cache, ":=???%s\n", print_event_info->delimiter);
+       else
+-        my_b_printf(&cache, ":=_%s %s COLLATE `%s`%s\n",
++        my_b_printf(&cache, ":=_%s %s COLLATE %`s%s\n",
+                     cs->csname, hex_str, cs->name,
+                     print_event_info->delimiter);
+       my_afree(hex_str);
+@@ -6362,7 +6382,7 @@
+ #endif  
+ 
+ #ifndef MYSQL_CLIENT
+-void Slave_log_event::pack_info(Protocol *protocol)
++void Slave_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[256+HOSTNAME_LENGTH], *pos;
+   pos= strmov(buf, "host=");
+@@ -6734,7 +6754,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Create_file_log_event::pack_info(Protocol *protocol)
++void Create_file_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[SAFE_NAME_LEN*2 + 30 + 21*2], *pos;
+   pos= strmov(buf, "db=");
+@@ -6916,7 +6936,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Append_block_log_event::pack_info(Protocol *protocol)
++void Append_block_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[256];
+   uint length;
+@@ -7069,7 +7089,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Delete_file_log_event::pack_info(Protocol *protocol)
++void Delete_file_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[64];
+   uint length;
+@@ -7168,7 +7188,7 @@
+ */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Execute_load_log_event::pack_info(Protocol *protocol)
++void Execute_load_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[64];
+   uint length;
+@@ -7422,27 +7442,26 @@
+ 
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Execute_load_query_log_event::pack_info(Protocol *protocol)
++void Execute_load_query_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+-  char *buf, *pos;
+-  if (!(buf= (char*) my_malloc(9 + db_len + q_len + 10 + 21, MYF(MY_WME))))
+-    return;
+-  pos= buf;
++  char buf_mem[1024];
++  char file_id_buf[22];
++  String buf(buf_mem, sizeof(buf_mem), system_charset_info);
++  buf.real_alloc(9 + db_len + q_len + 10 + 21);
+   if (db && db_len)
+   {
+-    pos= strmov(buf, "use `");
+-    memcpy(pos, db, db_len);
+-    pos= strmov(pos+db_len, "`; ");
+-  }
+-  if (query && q_len)
+-  {
+-    memcpy(pos, query, q_len);
+-    pos+= q_len;
+-  }
+-  pos= strmov(pos, " ;file_id=");
+-  pos= int10_to_str((long) file_id, pos, 10);
+-  protocol->store(buf, pos-buf, &my_charset_bin);
+-  my_free(buf, MYF(MY_ALLOW_ZERO_PTR));
++    if (buf.append("use ") ||
++        append_identifier(thd, &buf, db, db_len) ||
++        buf.append("; "))
++      return;
++  }
++  if (query && q_len && buf.append(query, q_len))
++    return;
++  int10_to_str((long) file_id, file_id_buf, 10);
++  if (buf.append(" ;file_id=") ||
++      buf.append(file_id_buf))
++    return;
++  protocol->store(buf.ptr(), buf.length(), &my_charset_bin);
+ }
+ 
+ 
+@@ -8386,7 +8405,7 @@
+ #endif
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Rows_log_event::pack_info(Protocol *protocol)
++void Rows_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[256];
+   char const *const flagstr=
+@@ -8488,7 +8507,7 @@
+ #endif
+ 
+ #if !defined(MYSQL_CLIENT) && defined(HAVE_REPLICATION)
+-void Annotate_rows_log_event::pack_info(Protocol* protocol)
++void Annotate_rows_log_event::pack_info(THD *thd, Protocol* protocol)
+ {
+   if (m_query_txt && m_query_len)
+     protocol->store(m_query_txt, m_query_len, &my_charset_bin);
+@@ -9230,7 +9249,7 @@
+  */
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Table_map_log_event::pack_info(Protocol *protocol)
++void Table_map_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+     char buf[256];
+     size_t bytes= my_snprintf(buf, sizeof(buf),
+@@ -9251,7 +9270,7 @@
+   {
+     print_header(&print_event_info->head_cache, print_event_info, TRUE);
+     my_b_printf(&print_event_info->head_cache,
+-                "\tTable_map: `%s`.`%s` mapped to number %lu\n",
++                "\tTable_map: %`s.%`s mapped to number %lu\n",
+                 m_dbnam, m_tblnam, m_table_id);
+     print_base64(&print_event_info->body_cache, print_event_info, TRUE);
+   }
+@@ -10531,7 +10550,7 @@
+ 
+ 
+ #ifndef MYSQL_CLIENT
+-void Incident_log_event::pack_info(Protocol *protocol)
++void Incident_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[256];
+   size_t bytes;
+
+=== modified file 'sql/log_event.h'
+--- sql/log_event.h	2012-03-13 14:38:43 +0000
++++ sql/log_event.h	2012-08-24 12:02:32 +0000
+@@ -1008,14 +1008,15 @@
+   */
+   static void init_show_field_list(List<Item>* field_list);
+ #ifdef HAVE_REPLICATION
+-  int net_send(Protocol *protocol, const char* log_name, my_off_t pos);
++  int net_send(THD *thd, Protocol *protocol, const char* log_name,
++               my_off_t pos);
+ 
+   /*
+     pack_info() is used by SHOW BINLOG EVENTS; as print() it prepares and sends
+     a string to display to the user, so it resembles print().
+   */
+ 
+-  virtual void pack_info(Protocol *protocol);
++  virtual void pack_info(THD *thd, Protocol *protocol);
+ 
+ #endif /* HAVE_REPLICATION */
+   virtual const char* get_db()
+@@ -1741,7 +1742,7 @@
+                   bool using_trans, bool suppress_use, int error);
+   const char* get_db() { return db; }
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print_query_header(IO_CACHE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -1871,7 +1872,7 @@
+ 
+ #ifndef MYSQL_CLIENT
+   Slave_log_event(THD* thd_arg, Relay_log_info* rli);
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+ #endif
+@@ -2104,9 +2105,11 @@
+                      const Format_description_log_event* description_event);
+ 
+ public:
+-  uint get_query_buffer_length();
+-  void print_query(bool need_db, const char *cs, char *buf, char **end,
+-                   char **fn_start, char **fn_end);
++#ifndef MYSQL_CLIENT
++  void print_query(THD *thd, bool need_db, const char *cs, String *buf,
++                   my_off_t *fn_start, my_off_t *fn_end,
++                   const char *qualify_db);
++#endif
+   ulong thread_id;
+   ulong slave_proxy_id;
+   uint32 table_name_len;
+@@ -2154,7 +2157,7 @@
+                   Name_resolution_context *context);
+   const char* get_db() { return db; }
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2253,7 +2256,7 @@
+ #ifndef MYSQL_CLIENT
+   Start_log_event_v3();
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   Start_log_event_v3() {}
+@@ -2414,7 +2417,7 @@
+     :Log_event(thd_arg,0,0), val(val_arg), type(type_arg)
+   { cache_type= cache_type_arg; }
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2491,7 +2494,7 @@
+     :Log_event(thd_arg, 0, 0), seed1(seed1_arg), seed2(seed2_arg)
+     { cache_type= cache_type_arg; }
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2536,7 +2539,7 @@
+   Xid_log_event(THD* thd_arg, my_xid x): Log_event(thd_arg, 0, 0), xid(x)
+   { cache_type= EVENT_NO_CACHE; }
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2586,7 +2589,7 @@
+     :Log_event(thd_arg, 0, 0), name(name_arg), name_len(name_len_arg), val(val_arg),
+      val_len(val_len_arg), type(type_arg), charset_number(charset_number_arg)
+     { is_null= !val; cache_type= cache_type_arg; }
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+ #endif
+@@ -2717,7 +2720,7 @@
+ 		   uint ident_len_arg,
+ 		   ulonglong pos_arg, uint flags);
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2777,7 +2780,7 @@
+ 			uchar* block_arg, uint block_len_arg,
+ 			bool using_trans);
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2849,7 +2852,7 @@
+   Append_block_log_event(THD* thd, const char* db_arg, uchar* block_arg,
+ 			 uint block_len_arg, bool using_trans);
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+   virtual int get_create_or_append() const;
+ #endif /* HAVE_REPLICATION */
+ #else
+@@ -2890,7 +2893,7 @@
+ #ifndef MYSQL_CLIENT
+   Delete_file_log_event(THD* thd, const char* db_arg, bool using_trans);
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -2931,7 +2934,7 @@
+ #ifndef MYSQL_CLIENT
+   Execute_load_log_event(THD* thd, const char* db_arg, bool using_trans);
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -3027,7 +3030,7 @@
+                                bool using_trans, bool suppress_use,
+                                int errcode);
+ #ifdef HAVE_REPLICATION
+-  void pack_info(Protocol* protocol);
++  void pack_info(THD *thd, Protocol* protocol);
+ #endif /* HAVE_REPLICATION */
+ #else
+   void print(FILE* file, PRINT_EVENT_INFO* print_event_info);
+@@ -3113,7 +3116,7 @@
+ #endif
+ 
+ #if !defined(MYSQL_CLIENT) && defined(HAVE_REPLICATION)
+-  virtual void pack_info(Protocol*);
++  virtual void pack_info(THD *thd, Protocol*);
+ #endif
+ 
+ #ifdef MYSQL_CLIENT
+@@ -3527,7 +3530,7 @@
+ #endif
+ 
+ #if !defined(MYSQL_CLIENT) && defined(HAVE_REPLICATION)
+-  virtual void pack_info(Protocol *protocol);
++  virtual void pack_info(THD *thd, Protocol *protocol);
+ #endif
+ 
+ #ifdef MYSQL_CLIENT
+@@ -3639,7 +3642,7 @@
+   flag_set get_flags(flag_set flags_arg) const { return m_flags & flags_arg; }
+ 
+ #if !defined(MYSQL_CLIENT) && defined(HAVE_REPLICATION)
+-  virtual void pack_info(Protocol *protocol);
++  virtual void pack_info(THD *thd, Protocol *protocol);
+ #endif
+ 
+ #ifdef MYSQL_CLIENT
+@@ -4080,7 +4083,7 @@
+ #endif
+ 
+ #ifndef MYSQL_CLIENT
+-  void pack_info(Protocol*);
++  void pack_info(THD *thd, Protocol*);
+ #endif
+ 
+   Incident_log_event(const char *buf, uint event_len,
+
+=== modified file 'sql/log_event_old.cc'
+--- sql/log_event_old.cc	2012-03-13 14:38:43 +0000
++++ sql/log_event_old.cc	2012-08-24 12:02:32 +0000
+@@ -2012,7 +2012,7 @@
+ 
+ 
+ #if defined(HAVE_REPLICATION) && !defined(MYSQL_CLIENT)
+-void Old_rows_log_event::pack_info(Protocol *protocol)
++void Old_rows_log_event::pack_info(THD *thd, Protocol *protocol)
+ {
+   char buf[256];
+   char const *const flagstr=
+
+=== modified file 'sql/log_event_old.h'
+--- sql/log_event_old.h	2012-03-13 14:38:43 +0000
++++ sql/log_event_old.h	2012-08-24 12:02:32 +0000
+@@ -108,7 +108,7 @@
+   flag_set get_flags(flag_set flags_arg) const { return m_flags & flags_arg; }
+ 
+ #if !defined(MYSQL_CLIENT) && defined(HAVE_REPLICATION)
+-  virtual void pack_info(Protocol *protocol);
++  virtual void pack_info(THD *thd, Protocol *protocol);
+ #endif
+ 
+ #ifdef MYSQL_CLIENT
+
+=== modified file 'sql/mysql_priv.h'
+--- sql/mysql_priv.h	2012-05-21 14:37:46 +0000
++++ sql/mysql_priv.h	2012-08-24 12:02:32 +0000
+@@ -1549,7 +1549,7 @@
+ /* sql_show.cc */
+ bool mysqld_show_open_tables(THD *thd,const char *wild);
+ bool mysqld_show_logs(THD *thd);
+-void append_identifier(THD *thd, String *packet, const char *name,
++bool append_identifier(THD *thd, String *packet, const char *name,
+ 		       uint length);
+ #endif /* MYSQL_SERVER */
+ #if defined MYSQL_SERVER || defined INNODB_COMPATIBILITY_HOOKS
+
+=== modified file 'sql/sql_base.cc'
+--- sql/sql_base.cc	2012-05-21 14:37:46 +0000
++++ sql/sql_base.cc	2012-08-24 12:02:32 +0000
+@@ -4254,22 +4254,22 @@
+     entry->file->implicit_emptied= 0;
+     if (mysql_bin_log.is_open())
+     {
+-      char *query, *end;
+-      uint query_buf_size= 20 + share->db.length + share->table_name.length +1;
+-      if ((query= (char*) my_malloc(query_buf_size,MYF(MY_WME))))
++      char query_buf[2*FN_REFLEN + 21];
++      String query(query_buf, sizeof(query_buf), system_charset_info);
++      query.length(0);
++      if (query.ptr())
+       {
+         /* this DELETE FROM is needed even with row-based binlogging */
+-        end = strxmov(strmov(query, "DELETE FROM `"),
+-                      share->db.str,"`.`",share->table_name.str,"`", NullS);
++        query.append("DELETE FROM ");
++        append_identifier(thd, &query, share->db.str, share->db.length);
++        query.append(".");
++        append_identifier(thd, &query, share->table_name.str,
++                          share->table_name.length);
+         int errcode= query_error_code(thd, TRUE);
+         if (thd->binlog_query(THD::STMT_QUERY_TYPE,
+-                              query, (ulong)(end-query),
++                              query.ptr(), query.length(),
+                               FALSE, FALSE, errcode))
+-        {
+-          my_free(query, MYF(0));
+           goto err;
+-        }
+-        my_free(query, MYF(0));
+       }
+       else
+       {
+@@ -4279,7 +4279,7 @@
+           because of MYF(MY_WME) in my_malloc() above).
+         */
+         sql_print_error("When opening HEAP table, could not allocate memory "
+-                        "to write 'DELETE FROM `%s`.`%s`' to the binary log",
++                        "to write 'DELETE FROM %`s.%`s' to the binary log",
+                         table_list->db, table_list->table_name);
+         delete entry->triggers;
+         closefrm(entry, 0);
+
+=== modified file 'sql/sql_db.cc'
+--- sql/sql_db.cc	2011-12-11 09:34:44 +0000
++++ sql/sql_db.cc	2012-08-24 12:02:32 +0000
+@@ -614,7 +614,6 @@
+                      bool silent)
+ {
+   char	 path[FN_REFLEN+16];
+-  char	 tmp_query[FN_REFLEN+16];
+   long result= 1;
+   int error= 0;
+   MY_STAT stat_info;
+@@ -721,17 +720,9 @@
+     char *query;
+     uint query_length;
+ 
+-    if (!thd->query())                          // Only in replication
+-    {
+-      query= 	     tmp_query;
+-      query_length= (uint) (strxmov(tmp_query,"create database `",
+-                                    db, "`", NullS) - tmp_query);
+-    }
+-    else
+-    {
+-      query=        thd->query();
+-      query_length= thd->query_length();
+-    }
++    query=        thd->query();
++    query_length= thd->query_length();
++    DBUG_ASSERT(query);
+ 
+     ha_binlog_log_query(thd, 0, LOGCOM_CREATE_DB,
+                         query, query_length,
+@@ -991,18 +982,11 @@
+   {
+     const char *query;
+     ulong query_length;
+-    if (!thd->query())
+-    {
+-      /* The client used the old obsolete mysql_drop_db() call */
+-      query= path;
+-      query_length= (uint) (strxmov(path, "drop database `", db, "`",
+-                                     NullS) - path);
+-    }
+-    else
+-    {
+-      query= thd->query();
+-      query_length= thd->query_length();
+-    }
++
++    query= thd->query();
++    query_length= thd->query_length();
++    DBUG_ASSERT(query);
++
+     if (mysql_bin_log.is_open())
+     {
+       thd->clear_error();
+@@ -1043,9 +1027,10 @@
+     for (tbl= dropped_tables; tbl; tbl= tbl->next_local)
+     {
+       uint tbl_name_len;
++      char quoted_name[FN_REFLEN+3];
+ 
+-      /* 3 for the quotes and the comma*/
+-      tbl_name_len= strlen(tbl->table_name) + 3;
++      my_snprintf(quoted_name, sizeof(quoted_name), "%`s", tbl->table_name);
++      tbl_name_len= strlen(quoted_name) + 1; /* +1 for the comma */
+       if (query_pos + tbl_name_len + 1 >= query_end)
+       {
+         /* These DDL methods and logging protected with LOCK_mysql_create_db */
+@@ -1057,9 +1042,7 @@
+         query_pos= query_data_start;
+       }
+ 
+-      *query_pos++ = '`';
+-      query_pos= strmov(query_pos,tbl->table_name);
+-      *query_pos++ = '`';
++      query_pos= strmov(query_pos, quoted_name);
+       *query_pos++ = ',';
+     }
+ 
+
+=== modified file 'sql/sql_insert.cc'
+--- sql/sql_insert.cc	2012-02-03 11:32:29 +0000
++++ sql/sql_insert.cc	2012-08-24 12:02:32 +0000
+@@ -3543,16 +3543,16 @@
+     if (thd->lex->create_select_in_comment)
+       query.append(STRING_WITH_LEN("/*! "));
+     if (thd->lex->ignore)
+-      query.append(STRING_WITH_LEN("INSERT IGNORE INTO `"));
++      query.append(STRING_WITH_LEN("INSERT IGNORE INTO "));
+     else if (thd->lex->duplicates == DUP_REPLACE)
+-      query.append(STRING_WITH_LEN("REPLACE INTO `"));
++      query.append(STRING_WITH_LEN("REPLACE INTO "));
+     else
+-      query.append(STRING_WITH_LEN("INSERT INTO `"));
++      query.append(STRING_WITH_LEN("INSERT INTO "));
+ 
+-    query.append(create_table->db, db_len);
+-    query.append(STRING_WITH_LEN("`.`"));
+-    query.append(create_info->alias, table_len);
+-    query.append(STRING_WITH_LEN("` "));
++    append_identifier(thd, &query, create_table->db, db_len);
++    query.append(STRING_WITH_LEN("."));
++    append_identifier(thd, &query, create_info->alias, table_len);
++    query.append(STRING_WITH_LEN(" "));
+ 
+     /*
+       The insert items.
+
+=== modified file 'sql/sql_load.cc'
+--- sql/sql_load.cc	2012-04-05 21:07:18 +0000
++++ sql/sql_load.cc	2012-08-24 12:02:32 +0000
+@@ -24,6 +24,7 @@
+ #include "sql_repl.h"
+ #include "sp_head.h"
+ #include "sql_trigger.h"
++#include "sql_show.h"
+ 
+ class READ_INFO {
+   File	file;
+@@ -615,24 +616,31 @@
+                                                bool transactional_table,
+                                                int errcode)
+ {
+-  char                *load_data_query,
+-                      *end,
+-                      *fname_start,
+-                      *fname_end,
+-                      *p= NULL;
+-  size_t               pl= 0;
++  char                *load_data_query;
++  my_off_t            fname_start,
++                      fname_end;
+   List<Item>           fv;
+   Item                *item, *val;
+   int                  n;
+-  const char          *tbl= table_name_arg;
+   const char          *tdb= (thd->db != NULL ? thd->db : db_arg);
++  const char          *qualify_db= NULL;
+   char 		      name_buffer[SAFE_NAME_LEN*2];
+   char                command_buffer[1024];
+   String              string_buf(name_buffer, sizeof(name_buffer),
+                                  system_charset_info);
+-  String              pfields(command_buffer, sizeof(command_buffer),
++  String              query_str(command_buffer, sizeof(command_buffer),
+                               system_charset_info);
+ 
++  Load_log_event       lle(thd, ex, tdb, table_name_arg, fv, duplicates,
++                           ignore, transactional_table);
++
++  /*
++    force in a LOCAL if there was one in the original.
++  */
++  if (thd->lex->local_file)
++    lle.set_fname_outside_temp_buf(ex->file_name, strlen(ex->file_name));
++
++  query_str.length(0);
+   if (!thd->db || strcmp(db_arg, thd->db)) 
+   {
+     /*
+@@ -640,49 +648,31 @@
+       prefix table name with database name so that it 
+       becomes a FQ name.
+      */
+-    string_buf.length(0);
+-    string_buf.append(db_arg);
+-    string_buf.append("`");
+-    string_buf.append(".");
+-    string_buf.append("`");
+-    string_buf.append(table_name_arg);
+-    tbl= string_buf.c_ptr_safe();
++    qualify_db= db_arg;
+   }
+-
+-  Load_log_event       lle(thd, ex, tdb, tbl, fv, duplicates,
+-                           ignore, transactional_table);
+-
+-  /*
+-    force in a LOCAL if there was one in the original.
+-  */
+-  if (thd->lex->local_file)
+-    lle.set_fname_outside_temp_buf(ex->file_name, strlen(ex->file_name));
++  lle.print_query(thd, FALSE, (const char *) ex->cs?ex->cs->csname:NULL,
++                  &query_str, &fname_start, &fname_end, qualify_db);
+ 
+   /*
+     prepare fields-list and SET if needed; print_query won't do that for us.
+   */
+-  pfields.length(0);
+   if (!thd->lex->field_list.is_empty())
+   {
+     List_iterator<Item>  li(thd->lex->field_list);
+ 
+-    pfields.append(" (");
++    query_str.append(" (");
+     n= 0;
+ 
+     while ((item= li++))
+     {
+       if (n++)
+-        pfields.append(", ");
++        query_str.append(", ");
+       if (item->name)
+-      {
+-        pfields.append("`");
+-        pfields.append(item->name);
+-        pfields.append("`");
+-      }
++        append_identifier(thd, &query_str, item->name, strlen(item->name));
+       else
+-        item->print(&pfields, QT_ORDINARY);
++        ((Item_user_var_as_out_param *)item)->print_for_load(thd, &query_str);
+     }
+-    pfields.append(")");
++    query_str.append(")");
+   }
+ 
+   if (!thd->lex->update_list.is_empty())
+@@ -690,39 +680,26 @@
+     List_iterator<Item> lu(thd->lex->update_list);
+     List_iterator<Item> lv(thd->lex->value_list);
+ 
+-    pfields.append(" SET ");
++    query_str.append(" SET ");
+     n= 0;
+ 
+     while ((item= lu++))
+     {
+       val= lv++;
+       if (n++)
+-        pfields.append(", ");
+-      pfields.append("`");
+-      pfields.append(item->name);
+-      pfields.append("`");
+-      pfields.append("=");
+-      val->print(&pfields, QT_ORDINARY);
++        query_str.append(", ");
++      append_identifier(thd, &query_str, item->name, strlen(item->name));
++      query_str.append("=");
++      val->print(&query_str, QT_ORDINARY);
+     }
+   }
+ 
+-  p=  pfields.c_ptr_safe();
+-  pl= pfields.length();
+-
+-  if (!(load_data_query= (char *)thd->alloc(lle.get_query_buffer_length() + 1 + pl)))
++  if (!(load_data_query= (char *)thd->strmake(query_str.ptr(), query_str.length())))
+     return TRUE;
+ 
+-  lle.print_query(FALSE, (const char *) ex->cs?ex->cs->csname:NULL,
+-                  load_data_query, &end,
+-                  (char **)&fname_start, (char **)&fname_end);
+-
+-  strcpy(end, p);
+-  end += pl;
+-
+   Execute_load_query_log_event
+-    e(thd, load_data_query, end-load_data_query,
+-      (uint) ((char*) fname_start - load_data_query - 1),
+-      (uint) ((char*) fname_end - load_data_query),
++    e(thd, load_data_query, query_str.length(),
++      (uint) (fname_start - 1), (uint) fname_end,
+       (duplicates == DUP_REPLACE) ? LOAD_DUP_REPLACE :
+       (ignore ? LOAD_DUP_IGNORE : LOAD_DUP_ERROR),
+       transactional_table, FALSE, errcode);
+
+=== modified file 'sql/sql_repl.cc'
+--- sql/sql_repl.cc	2011-12-11 09:34:44 +0000
++++ sql/sql_repl.cc	2012-08-24 12:02:32 +0000
+@@ -1721,7 +1721,7 @@
+         description_event->checksum_alg= ev->checksum_alg;
+ 
+       if (event_count >= limit_start &&
+-	  ev->net_send(protocol, linfo.log_file_name, pos))
++	  ev->net_send(thd, protocol, linfo.log_file_name, pos))
+       {
+ 	errmsg = "Net error";
+ 	delete ev;
+
+=== modified file 'sql/sql_show.cc'
+--- sql/sql_show.cc	2012-05-20 12:57:29 +0000
++++ sql/sql_show.cc	2012-08-24 12:02:32 +0000
+@@ -1053,9 +1053,13 @@
+   packet                target string
+   name                  the identifier to be appended
+   name_length           length of the appending identifier
++
++  RETURN VALUES
++    true                Error
++    false               Ok
+ */
+ 
+-void
++bool
+ append_identifier(THD *thd, String *packet, const char *name, uint length)
+ {
+   const char *name_end;
+@@ -1063,10 +1067,7 @@
+   int q= get_quote_char_for_identifier(thd, name, length);
+ 
+   if (q == EOF)
+-  {
+-    packet->append(name, length, packet->charset());
+-    return;
+-  }
++    return packet->append(name, length, packet->charset());
+ 
+   /*
+     The identifier must be quoted as it includes a quote character or
+@@ -1075,7 +1076,8 @@
+ 
+   VOID(packet->reserve(length*2 + 2));
+   quote_char= (char) q;
+-  packet->append(&quote_char, 1, system_charset_info);
++  if (packet->append(&quote_char, 1, system_charset_info))
++    return true;
+ 
+   for (name_end= name+length ; name < name_end ; name+= length)
+   {
+@@ -1090,11 +1092,13 @@
+     */
+     if (!length)
+       length= 1;
+-    if (length == 1 && chr == (uchar) quote_char)
+-      packet->append(&quote_char, 1, system_charset_info);
+-    packet->append(name, length, system_charset_info);
++    if (length == 1 && chr == (uchar) quote_char &&
++        packet->append(&quote_char, 1, system_charset_info))
++      return true;
++    if (packet->append(name, length, system_charset_info))
++      return true;
+   }
+-  packet->append(&quote_char, 1, system_charset_info);
++  return packet->append(&quote_char, 1, system_charset_info);
+ }
+ 
+ 
+
+=== modified file 'sql/sql_string.cc'
+--- sql/sql_string.cc	2012-04-05 21:07:18 +0000
++++ sql/sql_string.cc	2012-08-24 12:02:32 +0000
+@@ -1159,39 +1159,47 @@
+ 
+ 
+ 
+-
+-void String::print(String *str)
++/*
++  Append characters to a single-quoted string '...', escaping special
++  characters as necessary.
++  Does not add the enclosing quotes, this is left up to caller.
++*/
++void String::append_for_single_quote(const char *st, uint len)
+ {
+-  char *st= (char*)Ptr, *end= st+str_length;
++  const char *end= st+len;
+   for (; st < end; st++)
+   {
+     uchar c= *st;
+     switch (c)
+     {
+     case '\\':
+-      str->append(STRING_WITH_LEN("\\\\"));
++      append(STRING_WITH_LEN("\\\\"));
+       break;
+     case '\0':
+-      str->append(STRING_WITH_LEN("\\0"));
++      append(STRING_WITH_LEN("\\0"));
+       break;
+     case '\'':
+-      str->append(STRING_WITH_LEN("\\'"));
++      append(STRING_WITH_LEN("\\'"));
+       break;
+     case '\n':
+-      str->append(STRING_WITH_LEN("\\n"));
++      append(STRING_WITH_LEN("\\n"));
+       break;
+     case '\r':
+-      str->append(STRING_WITH_LEN("\\r"));
++      append(STRING_WITH_LEN("\\r"));
+       break;
+     case '\032': // Ctrl-Z
+-      str->append(STRING_WITH_LEN("\\Z"));
++      append(STRING_WITH_LEN("\\Z"));
+       break;
+     default:
+-      str->append(c);
++      append(c);
+     }
+   }
+ }
+ 
++void String::print(String *str)
++{
++  str->append_for_single_quote(Ptr, str_length);
++}
+ 
+ /*
+   Exchange state of this object and argument.
+
+=== modified file 'sql/sql_string.h'
+--- sql/sql_string.h	2011-12-11 09:34:44 +0000
++++ sql/sql_string.h	2012-08-24 12:02:32 +0000
+@@ -438,6 +438,7 @@
+     return FALSE;
+   }
+   void print(String *print);
++  void append_for_single_quote(const char *st, uint len);
+ 
+   /* Swap two string objects. Efficient way to exchange data without memcpy. */
+   void swap(String &s);
+
+=== modified file 'sql/sql_table.cc'
+--- sql/sql_table.cc	2012-04-05 21:07:18 +0000
++++ sql/sql_table.cc	2012-08-24 12:02:32 +0000
+@@ -1939,6 +1939,7 @@
+   for (table= tables; table; table= table->next_local)
+   {
+     char *db=table->db;
++    size_t db_length= table->db_length;
+     handlerton *table_type;
+     enum legacy_db_type frm_db_type= DB_TYPE_UNKNOWN;
+ 
+@@ -1961,14 +1962,14 @@
+           built_tmp_query.append("DROP TEMPORARY TABLE IF EXISTS ");
+         }
+ 
+-        built_tmp_query.append("`");
+         if (thd->db == NULL || strcmp(db,thd->db) != 0)
+         {
+-          built_tmp_query.append(db);
+-          built_tmp_query.append("`.`");
++          append_identifier(thd, &built_tmp_query, db, db_length);
++          built_tmp_query.append(".");
+         }
+-        built_tmp_query.append(table->table_name);
+-        built_tmp_query.append("`,");
++        append_identifier(thd, &built_tmp_query, table->table_name,
++                          table->table_name_length);
++        built_tmp_query.append(",");
+       }
+ 
+       continue;
+@@ -1994,15 +1995,15 @@
+         Don't write the database name if it is the current one (or if
+         thd->db is NULL).
+       */
+-      built_query.append("`");
+       if (thd->db == NULL || strcmp(db,thd->db) != 0)
+       {
+-        built_query.append(db);
+-        built_query.append("`.`");
++        append_identifier(thd, &built_query, db, db_length);
++        built_query.append(".");
+       }
+ 
+-      built_query.append(table->table_name);
+-      built_query.append("`,");
++      append_identifier(thd, &built_query, table->table_name,
++                        table->table_name_length);
++      built_query.append(",");
+     }
+ 
+     if (!drop_temporary)
+
+=== modified file 'strings/my_vsnprintf.c'
+--- strings/my_vsnprintf.c	2011-12-11 09:34:44 +0000
++++ strings/my_vsnprintf.c	2012-08-24 12:02:32 +0000
+@@ -635,3 +635,67 @@
+   va_end(args);
+   return result;
+ }
++
++
++/**
++  Writes output to the stream according to a format string.
++
++  @param stream     file to write to
++  @param format     string format
++  @param args       list of parameters
++
++  @retval
++    number of the characters written.
++*/
++
++int my_vfprintf(FILE *stream, const char* format, va_list args)
++{
++  char cvtbuf[1024];
++  int alloc= 0;
++  char *p= cvtbuf;
++  size_t cur_len= sizeof(cvtbuf);
++  int ret;
++
++  /*
++    We do not know how much buffer we need.
++    So start with a reasonably-sized stack-allocated buffer, and increase
++    it exponentially until it is big enough.
++  */
++  for (;;)
++  {
++    size_t new_len;
++    size_t actual= my_vsnprintf(p, cur_len, format, args);
++    if (actual < cur_len - 1)
++      break;
++    /*
++      Not enough space (or just enough with nothing to spare - but we cannot
++      distinguish this case from the return value). Allocate a bigger buffer
++      and try again.
++    */
++    if (alloc)
++      (*my_str_free)(p);
++    else
++      alloc= 1;
++    new_len= cur_len*2;
++    if (new_len < cur_len)
++      return 0;                                 /* Overflow */
++    cur_len= new_len;
++    p= (*my_str_malloc)(cur_len);
++    if (!p)
++      return 0;
++  }
++  ret= fprintf(stream, "%s", p);
++  if (alloc)
++    (*my_str_free)(p);
++  return ret;
++}
++
++int my_fprintf(FILE *stream, const char* format, ...)
++{
++  int result;
++  va_list args;
++  va_start(args, format);
++  result= my_vfprintf(stream, format, args);
++  va_end(args);
++  return result;
++}
+
