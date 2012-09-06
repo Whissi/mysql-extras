@@ -1432,22 +1432,22 @@
 @pn mariadb
 @@ Fix the minimal build by reordering CMakeLists.txt
 
-@patch 21000_sql-5.1.62.patch
+@patch 21000_all_sql-5.1.62.patch
 @ver 5.01.62.00 to 5.01.64.99
 @pn mariadb
 @@ Fix sql
 
-@patch 21000_sql-5.2.12.patch
+@patch 21000_all_sql-5.2.12.patch
 @ver 5.02.12.00 to 5.02.12.99
 @pn mariadb
 @@ Fix sql
 
-@patch 21000_sql-5.3.7.patch
+@patch 21000_all_sql-5.3.7.patch
 @ver 5.03.07.00 to 5.03.07.99
 @pn mariadb
 @@ Fix sql
 
-@patch 21000_sql-5.5.25.patch
+@patch 21000_all_sql-5.5.25.patch
 @ver 5.05.25.00 to 5.05.26.99
 @pn mariadb
 @@ Fix sql
