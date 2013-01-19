@@ -1427,6 +1427,11 @@
 @pn mysql
 @@ Fix the minimal build by reordering CMakeLists.txt
 
+@patch 20001_all_fix-minimal-build-cmake-mysql-5.5.29.patch
+@ver 5.05.29.00 to 5.05.99.99
+@pn mysql
+@@ Fix the minimal build by reordering CMakeLists.txt
+
 @patch 20001_all_fix-minimal-build-cmake-mariadb.patch
 @ver 5.05.00.00 to 5.05.26.99
 @pn mariadb
