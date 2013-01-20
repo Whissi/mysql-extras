@@ -1456,3 +1456,8 @@
 @ver 5.05.25.00 to 5.05.26.99
 @pn mariadb
 @@ Fix sql
+
+@patch 20002_all_mysql-va-list.patch
+@ver 5.05.00.00 to 5.99.99.99
+@pn mysql
+@@ Bug 442000, upstream 62729 compilation failure on arm and possibly other arches where va_list is a struct or array.
