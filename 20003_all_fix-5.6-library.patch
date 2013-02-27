@@ -1,0 +1,26 @@
+--- mysql-5.6-5.6.9-rc+dfsg.orig/cmake/readline.cmake
++++ mysql-5.6-5.6.9-rc+dfsg/cmake/readline.cmake
+@@ -192,9 +192,9 @@ MACRO (MYSQL_CHECK_READLINE)
+     IF(WITH_LIBEDIT) 
+      MYSQL_USE_BUNDLED_LIBEDIT()
+     ELSE()
+-      FIND_SYSTEM_LIBEDIT(edit)
+-      IF(NOT_LIBEDIT_FOUND)
+-        MESSAGE(FATAL_ERROR "Cannot find system libedit libraries.Use WITH_LIBEDIT") 
++      FIND_SYSTEM_LIBEDIT(readline)
++      IF(NOT_LIBREADLINE_FOUND)
++        MESSAGE(FATAL_ERROR "Cannot find system libreadline libraries.Use WITH_LIBREADLINE") 
+       ENDIF()
+     ENDIF()
+   ENDIF(NOT WIN32)
+--- a/storage/perfschema/unittest/CMakeLists.txt	2013-02-27 10:45:29.559846643 -0500
++++ b/storage/perfschema/unittest/CMakeLists.txt	2013-02-27 10:45:59.459430483 -0500
+@@ -63,7 +63,7 @@
+ TARGET_LINK_LIBRARIES(pfs_connect_attr-t sql binlog rpl master slave sql)
+ TARGET_LINK_LIBRARIES(pfs_connect_attr-t mysys mysys_ssl)
+ TARGET_LINK_LIBRARIES(pfs_connect_attr-t vio ${SSL_LIBRARIES})
+-TARGET_LINK_LIBRARIES(pfs_connect_attr-t strings dbug regex mysys zlib)
++TARGET_LINK_LIBRARIES(pfs_connect_attr-t strings dbug regex mysys ${ZLIB_LIBRARY})
+ ADD_TEST(pfs_connect_attr pfs_connect_attr-t)
+ 
+ # On windows, pfs_connect_attr-t may depend on openssl dlls.
