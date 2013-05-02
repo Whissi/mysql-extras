@@ -240,6 +240,12 @@
 @pn mariadb
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
 
+@patch 01050_all_mariadb_mysql_config_cleanup-5.5.patch
+@ver 5.05.00.00 to 10.01.99.99
+@pn mariadb
+@pn mariadb-galera
+@@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
+
 @patch 02000_all_query-logging-bypass-4.1.19.patch
 @ver 4.01.14.00 to 4.01.99.99
 @pn mysql
