@@ -573,10 +573,17 @@
 @@ FIXME: Testing patch - applies cleanly
 
 @patch 07110_all_mysql_gcc-4.2_5.1.65.patch
-@ver 5.01.65.00 to 5.01.99.99
+@ver 5.01.65.00 to 5.01.68.99
 @pn mysql
 @@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
 @@ FIXME: Testing patch - applies cleanly
+
+@patch 07110_all_mysql_gcc-4.2_5.1.69.patch
+@ver 5.01.69.00 to 5.01.99.99
+@pn mysql
+@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
+@@ FIXME: Testing patch - applies cleanly
+
 
 @patch 07120_all_openssl_handshake_mybug_33050.patch
 @ver 5.00.50.00 to 5.00.54.99
