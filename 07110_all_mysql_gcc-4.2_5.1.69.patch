@@ -1260,13 +1260,12 @@ diff -ur mysql-orig/sql/item_func.cc mysql/sql/item_func.cc
 diff -ur mysql-orig/sql/item_func.h mysql/sql/item_func.h
 --- mysql-orig/sql/item_func.h	2012-08-14 01:12:29.423437567 +0000
 +++ mysql/sql/item_func.h	2012-08-14 01:14:59.402197785 +0000
-@@ -421,7 +421,7 @@
+@@ -421,6 +421,6 @@
    const char *func_name() const { return "cast_as_unsigned"; }
    void fix_length_and_dec()
    {
 -    max_length= min(args[0]->max_length,MY_INT64_NUM_DECIMAL_DIGITS);
 +    max_length= MYSQL_MIN(args[0]->max_length,MY_INT64_NUM_DECIMAL_DIGITS);
-     unsigned_flag=1;
    }
    longlong val_int();
 diff -ur mysql-orig/sql/item_strfunc.cc mysql/sql/item_strfunc.cc
