@@ -769,7 +769,13 @@
 @@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
 
 @patch 07340_all_mysql_hardened_x86_strings-5.1.69.patch
-@ver 5.01.69.00 to 5.01.99.99
+@ver 5.01.69.00 to 5.01.69.99
+@pn mysql
+@pn mysql-cluster
+@@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
+
+@patch 07340_all_mysql_hardened_x86_strings-5.1.70.patch
+@ver 5.01.70.00 to 5.01.99.99
 @pn mysql
 @pn mysql-cluster
 @@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
