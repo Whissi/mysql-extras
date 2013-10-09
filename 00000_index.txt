@@ -1526,3 +1526,15 @@
 @ver 5.07.00.00 to 5.99.99.99
 @pn mysql
 @@ Fix readline upstream bug 63130
+
+@patch 20004_all_mariadb-filter-tokudb-flags.patch
+@ver 5.05.33.00 to 5.99.99.99
+@pn mariadb
+@pn mariadb-galera
+@@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
+
+@patch 20004_all_mariadb-filter-tokudb-flags.patch
+@ver 10.00.05.00 to 10.99.99.99
+@pn mariadb
+@pn mariadb-galera
+@@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
