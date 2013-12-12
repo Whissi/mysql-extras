@@ -1544,3 +1544,8 @@
 @pn mariadb
 @pn mariadb-galera
 @@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
+
+@patch 20005_all_mysql-unittest-5.1.73.patch
+@ver 5.01.73.00 to 5.01.99.99
+@pn mysql
+@@ Fix poor Makefile.am references in unittest/my_decimal
