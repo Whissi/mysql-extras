@@ -1,0 +1,129 @@
+diff -ur mysql-old/cmake/install_layout.cmake mysql/cmake/install_layout.cmake
+--- mysql-old/cmake/install_layout.cmake	2014-01-17 13:01:56.248694769 -0100
++++ mysql/cmake/install_layout.cmake	2014-01-17 13:02:26.515695920 -0100
+@@ -43,7 +43,8 @@
+ # - INSTALL_SCRIPTDIR       (several scripts, rarely used)
+ # - INSTALL_SYSCONFDIR	    (config files. Usually /etc or nothing)
+ #
+-# - INSTALL_LIBDIR          (directory with client end embedded libraries)
++# - INSTALL_LIBDIR          (directory with client libraries)
++# - INSTALL_ELIBDIR         (directory with embedded libraries)
+ # - INSTALL_PLUGINDIR       (directory for plugins)
+ #
+ # - INSTALL_INCLUDEDIR      (directory for MySQL headers)
+@@ -119,6 +120,7 @@
+ SET(INSTALL_SCRIPTDIR_STANDALONE        "scripts")
+ #
+ SET(INSTALL_LIBDIR_STANDALONE           "lib")
++SET(INSTALL_ELIBDIR_STANDALONE          "lib")
+ SET(INSTALL_PLUGINDIR_STANDALONE        "lib/plugin")
+ #
+ SET(INSTALL_INCLUDEDIR_STANDALONE       "include/mysql")
+@@ -148,9 +150,11 @@
+ #
+ IF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+   SET(INSTALL_LIBDIR_RPM                "lib64")
++  SET(INSTALL_ELIBDIR_RPM               "lib64")
+   SET(INSTALL_PLUGINDIR_RPM             "lib64/mysql/plugin")
+ ELSE()
+   SET(INSTALL_LIBDIR_RPM                "lib")
++  SET(INSTALL_ELIBDIR_RPM               "lib")
+   SET(INSTALL_PLUGINDIR_RPM             "lib/mysql/plugin")
+ ENDIF()
+ #
+@@ -180,6 +184,7 @@
+ SET(INSTALL_SCRIPTDIR_DEB               "bin")
+ #
+ SET(INSTALL_LIBDIR_DEB                  "lib")
++SET(INSTALL_ELIBDIR_DEB                 "lib")
+ SET(INSTALL_PLUGINDIR_DEB               "lib/mysql/plugin")
+ #
+ SET(INSTALL_INCLUDEDIR_DEB              "include/mysql")
+@@ -207,6 +212,7 @@
+ SET(INSTALL_SCRIPTDIR_SVR4              "scripts")
+ #
+ SET(INSTALL_LIBDIR_SVR4                 "lib")
++SET(INSTALL_ELIBDIR_SVR4                "lib")
+ SET(INSTALL_PLUGINDIR_SVR4              "lib/plugin")
+ #
+ SET(INSTALL_INCLUDEDIR_SVR4             "include/mysql")
+@@ -238,7 +244,7 @@
+ # Set INSTALL_FOODIR variables for chosen layout (for example, INSTALL_BINDIR
+ # will be defined  as ${INSTALL_BINDIR_STANDALONE} by default if STANDALONE
+ # layout is chosen)
+-FOREACH(var BIN SBIN LIB MYSQLSHARE SHARE PLUGIN INCLUDE SCRIPT DOC MAN SYSCONF
++FOREACH(var BIN SBIN LIB ELIB MYSQLSHARE SHARE PLUGIN INCLUDE SCRIPT DOC MAN SYSCONF
+     INFO MYSQLTEST SQLBENCH DOCREADME SUPPORTFILES MYSQLDATA PLUGINTEST UNIX_ADDR)
+   SET(INSTALL_${var}DIR  ${INSTALL_${var}DIR_${INSTALL_LAYOUT}}
+   CACHE STRING "${var} installation directory" ${FORCE})
+diff -ur mysql-old/cmake/libutils.cmake mysql/cmake/libutils.cmake
+--- mysql-old/cmake/libutils.cmake	2014-01-17 13:01:56.248694769 -0100
++++ mysql/cmake/libutils.cmake	2014-01-17 13:19:22.283734547 -0100
+@@ -211,10 +211,11 @@
+ #  [linklib1 .... linklibN]
+ #  [EXPORTS exported_func1 .... exportedFuncN]
+ #  [OUTPUT_NAME output_name]
++#  [OUTPUT_DIR output_dir]
+ #)
+ MACRO(MERGE_LIBRARIES)
+   MYSQL_PARSE_ARGUMENTS(ARG
+-    "EXPORTS;OUTPUT_NAME;COMPONENT;VERSION;SOVERSION"
++    "EXPORTS;OUTPUT_NAME;COMPONENT;VERSION;SOVERSION;OUTPUT_DIR"
+     "STATIC;SHARED;MODULE;NOINSTALL"
+     ${ARGN}
+   )
+@@ -274,7 +275,11 @@
+     IF(ARG_COMPONENT)
+       SET(COMP COMPONENT ${ARG_COMPONENT}) 
+     ENDIF()
+-    MYSQL_INSTALL_TARGETS(${TARGET} DESTINATION "${INSTALL_LIBDIR}" ${COMP})
++    IF(ARG_OUTPUT_DIR)
++      MYSQL_INSTALL_TARGETS(${TARGET} DESTINATION "${ARG_OUTPUT_DIR}" ${COMP})
++    ELSE()
++      MYSQL_INSTALL_TARGETS(${TARGET} DESTINATION "${INSTALL_LIBDIR}" ${COMP})
++    ENDIF()
+   ENDIF()
+   SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_INTERFACE_LIBRARIES "")
+   IF(ARG_SHARED AND LINK_FLAG_NO_UNDEFINED)
+diff -ur mysql-old/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
+--- mysql-old/libmysql/CMakeLists.txt	2014-01-17 13:01:56.247694769 -0100
++++ mysql/libmysql/CMakeLists.txt	2014-01-17 13:17:10.427729533 -0100
+@@ -329,7 +329,7 @@
+ 
+ # Merge several convenience libraries into one big mysqlclient
+ # and link them together into shared library.
+-MERGE_LIBRARIES(mysqlclient STATIC ${LIBS} COMPONENT Development)
++MERGE_LIBRARIES(mysqlclient STATIC ${LIBS} COMPONENT Development OUTPUT_DIR ${INSTALL_LIBDIR})
+ 
+ # Visual Studio users need debug  static library for debug projects
+ IF(MSVC)
+diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
+--- mysql-old/libmysqld/CMakeLists.txt	2014-01-17 13:01:56.048694761 -0100
++++ mysql/libmysqld/CMakeLists.txt	2014-01-17 13:18:03.210731540 -0100
+@@ -134,7 +134,7 @@
+ ENDFOREACH()
+ 
+ MERGE_LIBRARIES(mysqlserver STATIC ${EMBEDDED_LIBS} 
+-  OUTPUT_NAME ${MYSQLSERVER_OUTPUT_NAME} COMPONENT Development)
++  OUTPUT_NAME ${MYSQLSERVER_OUTPUT_NAME} COMPONENT Development OUTPUT_DIR ${INSTALL_ELIBDIR})
+ 
+ # Visual Studio users need debug  static library 
+ IF(MSVC)
+@@ -142,7 +142,7 @@
+ ENDIF()
+ 
+ IF(UNIX)
+- INSTALL_DEBUG_TARGET(mysqlserver DESTINATION ${INSTALL_LIBDIR} RENAME
++ INSTALL_DEBUG_TARGET(mysqlserver DESTINATION ${INSTALL_ELIBDIR} RENAME
+   ${CMAKE_STATIC_LIBRARY_PREFIX}mysqld-debug)
+ ENDIF()
+ 
+@@ -161,7 +161,7 @@
+ 
+ IF(NOT DISABLE_SHARED)
+   MERGE_LIBRARIES(libmysqld SHARED mysqlserver EXPORTS ${EMBEDDED_API}
+-    COMPONENT Server) 
++    COMPONENT Server OUTPUT_DIR ${INSTALL_ELIBDIR}) 
+   IF(UNIX)
+     # Name the shared library, handle versioning (provides same api as client
+     # library hence the same version)

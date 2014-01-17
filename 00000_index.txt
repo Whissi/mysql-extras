@@ -1549,3 +1549,8 @@
 @ver 5.01.73.00 to 5.01.99.99
 @pn mysql
 @@ Fix poor Makefile.am references in unittest/my_decimal
+
+@patch 20006_all_cmake_elib.patch
+@ver 5.05.32.00 to 5.05.32.99
+@pn mariadb
+@@ Add ELIBPATH to split client and embedded libs
