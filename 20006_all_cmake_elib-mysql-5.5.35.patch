@@ -1,6 +1,6 @@
 diff -ur mysql-old/cmake/install_layout.cmake mysql/cmake/install_layout.cmake
---- mysql-old/cmake/install_layout.cmake	2014-01-19 20:22:12.883270532 -0100
-+++ mysql/cmake/install_layout.cmake	2014-01-19 20:30:54.488290367 -0100
+--- mysql-old/cmake/install_layout.cmake	2014-01-20 00:14:06.581799638 -0100
++++ mysql/cmake/install_layout.cmake	2014-01-20 00:15:27.647802721 -0100
 @@ -43,7 +43,8 @@
  # - INSTALL_SBINDIR         (directory with mysqld)
  # - INSTALL_SCRIPTDIR       (several scripts, rarely used)
@@ -57,8 +57,8 @@ diff -ur mysql-old/cmake/install_layout.cmake mysql/cmake/install_layout.cmake
    SET(INSTALL_${var}DIR  ${INSTALL_${var}DIR_${INSTALL_LAYOUT}}
    CACHE STRING "${var} installation directory" ${FORCE})
 diff -ur mysql-old/cmake/libutils.cmake mysql/cmake/libutils.cmake
---- mysql-old/cmake/libutils.cmake	2014-01-19 20:22:12.883270532 -0100
-+++ mysql/cmake/libutils.cmake	2014-01-19 20:33:38.821296616 -0100
+--- mysql-old/cmake/libutils.cmake	2014-01-20 00:14:06.581799638 -0100
++++ mysql/cmake/libutils.cmake	2014-01-20 00:15:27.647802721 -0100
 @@ -40,6 +40,8 @@
  # - MERGE_LIBRARIES(target [STATIC|SHARED|MODULE]  [linklib1 .... linklibN]
  #  [EXPORTS exported_func1 .... exported_func_N]
@@ -89,10 +89,11 @@ diff -ur mysql-old/cmake/libutils.cmake mysql/cmake/libutils.cmake
 +    ENDIF()
    ENDIF()
    SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_INTERFACE_LIBRARIES "")
- ENDMACRO()
+ 
+Only in mysql/cmake: libutils.cmake.orig
 diff -ur mysql-old/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
---- mysql-old/libmysql/CMakeLists.txt	2014-01-19 20:22:12.882270532 -0100
-+++ mysql/libmysql/CMakeLists.txt	2014-01-19 20:29:18.944286734 -0100
+--- mysql-old/libmysql/CMakeLists.txt	2014-01-20 00:14:06.580799638 -0100
++++ mysql/libmysql/CMakeLists.txt	2014-01-20 00:15:27.647802721 -0100
 @@ -165,7 +165,7 @@
  
  # Merge several convenience libraries into one big mysqlclient
@@ -103,8 +104,8 @@ diff -ur mysql-old/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
  # Visual Studio users need debug  static library for debug projects
  INSTALL_DEBUG_SYMBOLS(clientlib)
 diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
---- mysql-old/libmysqld/CMakeLists.txt	2014-01-19 20:22:12.757270527 -0100
-+++ mysql/libmysqld/CMakeLists.txt	2014-01-19 20:35:39.362301200 -0100
+--- mysql-old/libmysqld/CMakeLists.txt	2014-01-20 00:14:06.453799634 -0100
++++ mysql/libmysqld/CMakeLists.txt	2014-01-20 00:25:46.375826250 -0100
 @@ -127,7 +127,7 @@
  ENDFOREACH()
  
@@ -114,19 +115,21 @@ diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
  
  # Visual Studio users need debug  static library 
  IF(MSVC)
-@@ -135,11 +135,13 @@
+@@ -135,12 +135,14 @@
  ENDIF()
  
  IF(UNIX)
 - INSTALL_DEBUG_TARGET(mysqlserver DESTINATION ${INSTALL_LIBDIR} RENAME
 + INSTALL_DEBUG_TARGET(mysqlserver DESTINATION ${INSTALL_ELIBDIR} RENAME
-+
    ${CMAKE_STATIC_LIBRARY_PREFIX}mysqld-debug)
  ENDIF()
  
- IF(MSVC AND NOT DISABLE_SHARED)
-   MERGE_LIBRARIES(libmysqld SHARED ${LIBS} EXPORTS ${CLIENT_API_FUNCTIONS}
--  COMPONENT Embedded)
+ IF(NOT DISABLE_SHARED)
+-  MERGE_LIBRARIES(libmysqld SHARED mysqlserver EXPORTS ${CLIENT_API_FUNCTIONS})
++  MERGE_LIBRARIES(libmysqld SHARED mysqlserver EXPORTS ${CLIENT_API_FUNCTIONS}
 +  COMPONENT Embedded OUTPUT_DIR ${INSTALL_ELIBDIR})
 +
- ENDIF()
+   IF(UNIX)
+     # Name the shared library, handle versioning (provides same api as client library
+     # hence the same version)
+Only in mysql/libmysqld: CMakeLists.txt.rej
