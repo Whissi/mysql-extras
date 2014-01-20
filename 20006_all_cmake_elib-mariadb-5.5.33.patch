@@ -56,7 +56,6 @@ diff -ur mysql-old/cmake/install_layout.cmake mysql/cmake/install_layout.cmake
      INFO MYSQLTEST SQLBENCH DOCREADME SUPPORTFILES MYSQLDATA PLUGINTEST UNIX_ADDR)
    SET(INSTALL_${var}DIR  ${INSTALL_${var}DIR_${INSTALL_LAYOUT}}
    CACHE STRING "${var} installation directory" ${FORCE})
-Only in mysql/cmake: install_layout.cmake.orig
 diff -ur mysql-old/cmake/libutils.cmake mysql/cmake/libutils.cmake
 --- mysql-old/cmake/libutils.cmake	2014-01-18 22:28:40.430273470 -0100
 +++ mysql/cmake/libutils.cmake	2014-01-18 22:28:52.801273941 -0100

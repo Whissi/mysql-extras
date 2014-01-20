@@ -90,7 +90,6 @@ diff -ur mysql-old/cmake/libutils.cmake mysql/cmake/libutils.cmake
    ENDIF()
    SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_INTERFACE_LIBRARIES "")
  
-Only in mysql/cmake: libutils.cmake.orig
 diff -ur mysql-old/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
 --- mysql-old/libmysql/CMakeLists.txt	2014-01-20 00:14:06.580799638 -0100
 +++ mysql/libmysql/CMakeLists.txt	2014-01-20 00:15:27.647802721 -0100
@@ -132,4 +131,3 @@ diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
    IF(UNIX)
      # Name the shared library, handle versioning (provides same api as client library
      # hence the same version)
-Only in mysql/libmysqld: CMakeLists.txt.rej
