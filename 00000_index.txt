@@ -1540,7 +1540,13 @@
 @@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
 
 @patch 20004_all_mariadb-filter-tokudb-flags.patch
-@ver 10.00.05.00 to 10.99.99.99
+@ver 10.00.05.00 to 10.00.06.99
+@pn mariadb
+@pn mariadb-galera
+@@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
+
+@patch 20004_all_mariadb-filter-tokudb-flags-10.0.7.patch
+@ver 10.00.07.00 to 10.99.99.99
 @pn mariadb
 @pn mariadb-galera
 @@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
