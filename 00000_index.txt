@@ -1529,7 +1529,7 @@
 @@ Fix bad references to zlib and readline upstream bugs 68277 and 63130
 
 @patch 20003_all_fix-5.7-library.patch
-@ver 5.07.00.00 to 5.99.99.99
+@ver 5.07.00.00 to 5.07.02.99
 @pn mysql
 @@ Fix readline upstream bug 63130
 
