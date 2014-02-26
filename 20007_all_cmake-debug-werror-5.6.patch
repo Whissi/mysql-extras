@@ -1,0 +1,18 @@
+Gentoo-Bug: 494332
+Gentoo-Bug-URL: https://bugs.gentoo.org/show_bug.cgi?id=494332
+
+--- a/CMakeLists.txt	2014-02-26 13:32:49.779760325 -0500
++++ a/CMakeLists.txt	2014-02-26 13:33:27.208957243 -0500
+@@ -166,11 +166,7 @@
+ # Whether the maintainer mode compiler options should be enabled.
+ IF(MYSQL_MAINTAINER_MODE)
+   IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
+-    IF(WITH_INNODB_MEMCACHED)
+       SET_MYSQL_MAINTAINER_GNU_C_OPTIONS_NO_WERROR()
+-    ELSE()
+-      SET_MYSQL_MAINTAINER_GNU_C_OPTIONS()
+-    ENDIF()
+   ENDIF()
+   IF(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+     SET_MYSQL_MAINTAINER_GNU_CXX_OPTIONS()
+
