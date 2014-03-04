@@ -1562,36 +1562,43 @@
 @ver 5.05.32.00 to 5.05.32.99
 @pn mariadb
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-mariadb-5.5.33.patch
 @ver 5.05.33.00 to 5.05.99.99
 @pn mariadb
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-mysql-5.5.35.patch
 @ver 5.05.35.00 to 5.05.99.99
 @pn mysql
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-mysql-5.6.15.patch
-@ver 5.06.15.00 to 5.05.99.99
+@ver 5.06.15.00 to 5.06.99.99
 @pn mysql
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-percona-5.5.35.patch
 @ver 5.05.35.00 to 5.05.99.99
 @pn percona-server
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-percona-5.6.15.patch
 @ver 5.06.15.00 to 5.06.99.99
 @pn percona-server
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-mariadb-10.0.7.patch
 @ver 10.00.07.00 to 10.00.99.99
 @pn mariadb
 @@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20007_all_cmake-debug-werror.patch
 @ver 5.05.32.00 to 5.05.99.99
