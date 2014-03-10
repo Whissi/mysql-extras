@@ -123,12 +123,18 @@ diff -ur mysql-old/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
 diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
 --- mysql-old/libmysqld/CMakeLists.txt	2014-01-20 00:14:06.453799634 -0100
 +++ mysql/libmysqld/CMakeLists.txt	2014-01-20 00:25:46.375826250 -0100
-@@ -127,7 +127,7 @@
+@@ -126,8 +126,13 @@
+   ENDIF()
  ENDFOREACH()
  
++SET(INSTALL_STATIC_LIBS "")
++IF(NOT ENABLE_STATIC_LIBS)
++  SET(INSTALL_STATIC_LIBS "NOINSTALL")
++ENDIF()
++
  MERGE_LIBRARIES(mysqlserver STATIC ${EMBEDDED_LIBS} 
 -  OUTPUT_NAME ${MYSQLSERVER_OUTPUT_NAME} COMPONENT Embedded)
-+  OUTPUT_NAME ${MYSQLSERVER_OUTPUT_NAME} COMPONENT Embedded OUTPUT_DIR ${INSTALL_ELIBDIR})
++  OUTPUT_NAME ${MYSQLSERVER_OUTPUT_NAME} COMPONENT Embedded OUTPUT_DIR ${INSTALL_ELIBDIR} ${INSTALL_STATIC_LIBS})
  
  # Visual Studio users need debug  static library 
  IF(MSVC)
