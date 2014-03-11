@@ -1,5 +1,5 @@
---- maintainer.cmake.orig	2014-03-11 10:57:45.184755333 -0400
-+++ maintainer.cmake	2014-03-11 10:58:03.584364026 -0400
+--- a/cmake/maintainer.cmake	2014-03-11 10:57:45.184755333 -0400
++++ b/cmake/maintainer.cmake	2014-03-11 10:58:03.584364026 -0400
 @@ -18,7 +18,7 @@
  # Setup GCC (GNU C compiler) warning options.
  MACRO(SET_MYSQL_MAINTAINER_GNU_C_OPTIONS)
