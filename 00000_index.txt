@@ -1606,14 +1606,14 @@
 @pn percona-server
 @@ Remove -Werror from USE="debug" builds
 
-@patch 20007_all_cmake-debug-werror.patch
-@ver 5.06.16.00 to 5.06.99.99
+@patch 20007_all_cmake-debug-werror-5.6.patch
+@ver 5.06.00.00 to 5.06.15.99
 @pn mysql
 @pn percona-server
 @@ Remove -Werror from USE="debug" builds
 
-@patch 20007_all_cmake-debug-werror-5.6.patch
-@ver 5.06.00.00 to 5.06.15.99
+@patch 20007_all_cmake-debug-werror-5.6.16.patch
+@ver 5.06.16.00 to 5.06.99.99
 @pn mysql
 @pn percona-server
 @@ Remove -Werror from USE="debug" builds
