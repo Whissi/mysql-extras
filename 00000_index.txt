@@ -1571,7 +1571,13 @@
 @@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-mysql-5.5.35.patch
-@ver 5.05.35.00 to 5.05.99.99
+@ver 5.05.35.00 to 5.05.36.99
+@pn mysql
+@@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
+
+@patch 20006_all_cmake_elib-mysql-5.5.37.patch
+@ver 5.05.37.00 to 5.05.99.99
 @pn mysql
 @@ Add ELIBPATH to split client and embedded libs
 @@ Also install static libs by ENABLE_STATIC_LIBS
