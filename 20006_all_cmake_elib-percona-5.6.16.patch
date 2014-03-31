@@ -104,19 +104,18 @@ diff -ur mysql-old/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
 +
  # Merge several convenience libraries into one big perconaserverclient
 -MERGE_LIBRARIES(perconaserverclient STATIC ${LIBS} COMPONENT Development)
-+MERGE_LIBRARIES(perconaserverclient STATIC ${LIBS} COMPONENT Development OUTPUT_DIR ${INSTALL_LIBDIR} $INSTALL_STATIC_LIBS})
++MERGE_LIBRARIES(perconaserverclient STATIC ${LIBS} COMPONENT Development OUTPUT_DIR ${INSTALL_LIBDIR} ${INSTALL_STATIC_LIBS})
  
  # Visual Studio users need debug  static library for debug projects
  INSTALL_DEBUG_SYMBOLS(clientlib)
-@@ -210,10 +215,12 @@
+@@ -210,9 +215,11 @@
  ENDIF()
  
  IF(UNIX)
--  GET_TARGET_NAME(perconaserverclient lib_name)
+   GET_TARGET_NAME(perconaserverclient lib_name)
 -  INSTALL_SYMLINK(perconaserverclient
 -    ${lib_name} ${CMAKE_STATIC_LIBRARY_PREFIX}perconaserverclient_r.a
 -    ${INSTALL_LIBDIR} Development)
-+  GET_TARGET_NAME(perconaserverclient lib_name)\
 +  IF(ENABLE_STATIC_LIBS)
 +    INSTALL_SYMLINK(perconaserverclient
 +      ${lib_name} ${CMAKE_STATIC_LIBRARY_PREFIX}perconaserverclient_r.a
