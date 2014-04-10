@@ -1635,3 +1635,9 @@
 @pn mysql
 @pn percona-server
 @@ Remove -Werror from USE="debug" builds
+
+@patch 20008_all_mysql-tzinfo-symlink.patch
+@ver 5.05.36.00 to 5.99.99.99
+@pn mysql
+@pn percona-server
+@@ Backport tzinfo symlink fix from MariaDB bug 491176
