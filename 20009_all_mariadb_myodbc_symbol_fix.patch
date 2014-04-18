@@ -1,0 +1,10 @@
+--- a/libmysql/CMakeLists.txt	2014-04-18 11:23:20.792196748 -0400
++++ b/libmysql/CMakeLists.txt	2014-04-18 11:01:32.743379333 -0400
+@@ -261,6 +261,7 @@
+     mysql_get_charset
+     mysql_get_charset_by_csname
+     mysql_net_realloc
++    my_charset_latin1
+ 
+     # PHP's mysqli.so requires this (via the ER() macro)
+     mysql_client_errors

@@ -1641,3 +1641,10 @@
 @pn mysql
 @pn percona-server
 @@ Backport tzinfo symlink fix from MariaDB bug 491176
+
+@patch 20009_all_mariadb_myodbc_symbol_fix.patch
+@ver 5.05.37.00 to 10.99.99.99
+@pn mariadb
+@pn mariadb-galera
+@@ Export missing symbol my_charset_latin1
+@@ MariaDB bug MDEV-6131
