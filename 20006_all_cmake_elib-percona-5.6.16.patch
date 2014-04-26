@@ -170,3 +170,37 @@ diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
 +  INSTALL(TARGETS mysqlservices DESTINATION ${INSTALL_LIBDIR} COMPONENT Development)
 +ENDIF()
 
+diff -aurN mysql.old/scripts/CMakeLists.txt mysql/scripts/CMakeLists.txt
+--- mysql.old/scripts/CMakeLists.txt	2014-03-25 09:10:46.000000000 -0400
++++ mysql/scripts/CMakeLists.txt	2014-04-25 23:19:05.544375123 -0400
+@@ -192,6 +192,7 @@
+ SET(scriptdir ${prefix}/${INSTALL_BINDIR})
+ SET(libexecdir ${prefix}/${INSTALL_SBINDIR})
+ SET(pkgdatadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
++SET(elibdir ${prefix}/${INSTALL_ELIBDIR})
+ IF(INSTALL_LAYOUT MATCHES "STANDALONE")
+   SET(localstatedir ${prefix}/data)
+ ELSE()
+diff -aurN mysql.old/scripts/mysql_config.sh mysql/scripts/mysql_config.sh
+--- mysql.old/scripts/mysql_config.sh	2014-03-25 09:10:46.000000000 -0400
++++ mysql/scripts/mysql_config.sh	2014-04-25 23:21:36.030085686 -0400
+@@ -91,6 +91,10 @@
+ plugindir_rel=`echo $plugindir | sed -e "s;^$basedir/;;"`
+ fix_path plugindir $plugindir_rel lib/mysql/plugin lib/plugin
+ 
++elibdir='@elibdir@'
++elibdir_rel=`echo $elibdir | sed -e "s;^$basedir/;;"`
++fix_path elibdir $elibdir_rel lib64/mysql lib64 lib/mysql lib
++
+ pkgincludedir='@pkgincludedir@'
+ if [ -f "$basedir/include/mysql/mysql.h" ]; then
+   pkgincludedir="$basedir/include/mysql"
+@@ -113,7 +117,7 @@
+ libs=" $ldflags -L$pkglibdir -lperconaserverclient @ZLIB_DEPS@ @NON_THREADED_LIBS@"
+ libs="$libs @openssl_libs@ @STATIC_NSS_FLAGS@ "
+ libs_r=" $ldflags -L$pkglibdir -lperconaserverclient_r @ZLIB_DEPS@ @CLIENT_LIBS@ @openssl_libs@ "
+-embedded_libs=" $ldflags -L$pkglibdir -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
++embedded_libs=" $ldflags -L$elibdir -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
+ embedded_libs="$embedded_libs @QUOTED_CMAKE_CXX_LINK_FLAGS@"
+ 
+ cflags="-I$pkgincludedir @CFLAGS@ " #note: end space!
