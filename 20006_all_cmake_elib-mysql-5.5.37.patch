@@ -170,3 +170,52 @@ diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
 +  INSTALL(TARGETS mysqlservices DESTINATION ${INSTALL_LIBDIR} COMPONENT Development)
 +ENDIF()
 
+diff -aurN a/mysql/scripts/CMakeLists.txt b/mysql/scripts/CMakeLists.txt
+--- a/mysql/scripts/CMakeLists.txt	2014-04-15 07:02:28.000000000 -0400
++++ b/mysql/scripts/CMakeLists.txt	2014-04-25 19:24:14.000000000 -0400
+@@ -198,6 +198,7 @@
+ SET(scriptdir ${prefix}/${INSTALL_BINDIR})
+ SET(libexecdir ${prefix}/${INSTALL_SBINDIR})
+ SET(pkgdatadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
++SET(elibdir ${prefix}/${INSTALL_ELIBDIR})
+ IF(INSTALL_LAYOUT MATCHES "STANDALONE")
+   SET(localstatedir ${prefix}/data)
+ ELSE()
+diff -aurN a/mysql/scripts/mysql_config.pl.in b/mysql/scripts/mysql_config.pl.in
+--- a/mysql/scripts/mysql_config.pl.in	2014-04-15 07:02:39.000000000 -0400
++++ b/mysql/scripts/mysql_config.pl.in	2014-04-25 19:28:48.000000000 -0400
+@@ -190,9 +190,10 @@
+ else
+ {
+   my $linkpath   = "-L$pkglibdir @RPATH_OPTION@";
++  my $elinkpath  = "-L@elibdir@ @RPATH_OPTION@";
+   @lib_opts   = ($linkpath,"-lmysqlclient");
+   @lib_r_opts = ($linkpath,"-lmysqlclient_r");
+-  @lib_e_opts = ($linkpath,"-lmysqld");
++  @lib_e_opts = ($elinkpath,"-lmysqld");
+ }
+ 
+ my $flags;
+diff -aurN a/mysql/scripts/mysql_config.sh b/mysql/scripts/mysql_config.sh
+--- a/mysql/scripts/mysql_config.sh	2014-04-25 20:05:16.000000000 -0400
++++ b/mysql/scripts/mysql_config.sh	2014-04-25 20:08:01.000000000 -0400
+@@ -91,6 +91,10 @@
+ plugindir_rel=`echo $plugindir | sed -e "s;^$basedir/;;"`
+ fix_path plugindir $plugindir_rel lib/mysql/plugin lib/plugin
+ 
++elibdir='@elibdir@'
++elibdir_rel=`echo $elibdir | sed -e "s;^$basedir/;;"`
++fix_path elibdir $elibdir_rel lib64/mysql lib64 lib/mysql lib
++
+ pkgincludedir='@pkgincludedir@'
+ fix_path pkgincludedir include/mysql
+ 
+@@ -109,7 +113,7 @@
+ libs=" $ldflags -L$pkglibdir @RPATH_OPTION@ -lmysqlclient @ZLIB_DEPS@ @NON_THREADED_LIBS@"
+ libs="$libs @openssl_libs@ @STATIC_NSS_FLAGS@ "
+ libs_r=" $ldflags -L$pkglibdir  @RPATH_OPTION@ -lmysqlclient_r @ZLIB_DEPS@ @CLIENT_LIBS@ @openssl_libs@ "
+-embedded_libs=" $ldflags -L$pkglibdir @RPATH_OPTION@ -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
++embedded_libs=" $ldflags -L$elibdir @RPATH_OPTION@ -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
+ 
+ if [ -r "$pkglibdir/libmygcc.a" ]; then
+   # When linking against the static library with a different version of GCC
