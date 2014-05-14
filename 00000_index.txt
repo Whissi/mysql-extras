@@ -1667,7 +1667,7 @@
 @@ Export missing symbol my_charset_latin1
 @@ MariaDB bug MDEV-6131
 
-@patch 20010_all_mysql-bison3.patch
+@patch 20010_all_mysql51-bison3.patch
 @ver 5.01.73.00 to 5.01.99.99
 @pn mysql
 @@ Fix Bison 3 compatibility
