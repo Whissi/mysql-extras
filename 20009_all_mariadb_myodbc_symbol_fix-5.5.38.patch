@@ -1,0 +1,15 @@
+diff -aurwN mysql.orig/libmysql/CMakeLists.txt mysql/libmysql/CMakeLists.txt
+--- mysql.orig/libmysql/CMakeLists.txt	2014-07-27 22:21:41.711342411 -0400
++++ mysql/libmysql/CMakeLists.txt	2014-07-27 22:26:15.558596434 -0400
+@@ -325,6 +325,11 @@
+     strmake
+     strmake_root
+     strxmov
++    my_thread_end_wait_time
++    insert_dynamic
++    delete_dynamic_element
++    my_qsort
++    allocate_dynamic
+ 
+     # pam_mysql.so
+     make_scrambled_password

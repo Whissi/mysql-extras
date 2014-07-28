@@ -1,0 +1,12 @@
+diff -auwrN a/libmysql/CMakeLists.txt b/libmysql/CMakeLists.txt
+--- a/libmysql/CMakeLists.txt	2014-07-27 22:03:27.806254846 -0400
++++ b/libmysql/CMakeLists.txt	2014-07-27 22:05:08.400521754 -0400
+@@ -131,6 +131,8 @@
+ mysql_set_character_set
+ mysql_get_character_set_info
+ mysql_stmt_next_result
++dynstr_append_os_quoted
++strfill
+ 
+ CACHE INTERNAL "Functions exported by client API"
+ 
