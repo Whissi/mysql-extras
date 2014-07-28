@@ -1668,7 +1668,13 @@
 @@ MariaDB bug MDEV-6131
 
 @patch 20009_all_mysql_myodbc_symbol_fix-5.5.38.patch
-@ver 5.05.38.00 to 5.07.99.99
+@ver 5.05.38.00 to 5.05.99.99
+@pn mysql
+@pn percona-server
+@@ Export missing symbols
+
+@patch 20009_all_mysql_myodbc_symbol_fix-5.6.patch
+@ver 5.06.00.00 to 5.07.99.99
 @pn mysql
 @pn percona-server
 @@ Export missing symbols
