@@ -1508,6 +1508,12 @@
 @pn mariadb
 @@ Fix the minimal build by reordering CMakeLists.txt
 
+@patch 20001_all_fix-minimal-build-cmake-mariadb-10.0.13.patch
+@ver 10.00.13.00 to 10.99.99.99
+@pn mariadb
+@@ Fix the minimal build by reordering CMakeLists.txt
+@@ Fixes MDEV-6562
+
 @patch 21000_all_sql-5.1.62.patch
 @ver 5.01.62.00 to 5.01.64.99
 @pn mariadb
