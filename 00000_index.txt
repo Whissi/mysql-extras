@@ -1713,3 +1713,10 @@
 @ver 5.01.73.00 to 5.01.99.99
 @pn mysql
 @@ Fix Bison 3 compatibility
+
+@patch 20011_all_mariadb-hppa-unsigned-long.patch
+@ver 5.05.39.00 to 5.05.99.99
+@ver 10.00.13.00 to 10.00.99.99
+@pn mariadb
+@@ Fix bad comparision of void to ulong
+@@ Gentoo bug 520092  MDEV-6595
