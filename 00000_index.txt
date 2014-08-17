@@ -1716,6 +1716,11 @@
 
 @patch 20011_all_mariadb-hppa-unsigned-long.patch
 @ver 5.05.39.00 to 5.05.99.99
+@pn mariadb
+@@ Fix bad comparision of void to ulong
+@@ Gentoo bug 520092  MDEV-6595
+
+@patch 20011_all_mariadb-hppa-unsigned-long-10.0.13.patch
 @ver 10.00.13.00 to 10.00.99.99
 @pn mariadb
 @@ Fix bad comparision of void to ulong
