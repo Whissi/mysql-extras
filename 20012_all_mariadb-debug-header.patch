@@ -1,0 +1,12 @@
+diff -aurN mysql.orig/config.h.cmake mysql/config.h.cmake
+--- mysql.orig/config.h.cmake	2014-10-08 09:19:51.000000000 -0400
++++ mysql/config.h.cmake	2014-10-17 09:51:33.617709631 -0400
+@@ -650,7 +650,7 @@
+ 
+   __GLIBC__ is defined in <features.h>
+ */
+-#ifdef __GLIBC__
++#if 0
+ #error <my_config.h> MUST be included first!
+ #endif
+ 

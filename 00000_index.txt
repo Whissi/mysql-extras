@@ -1734,3 +1734,10 @@
 @pn mariadb-galera
 @@ Fix bad comparision of void to ulong
 @@ Gentoo bug 520092  MDEV-6595
+
+@patch 20012_all_mariadb-debug-header.patch
+@ver 5.05.40.00 to 5.05.40.99
+@pn mariadb
+@pn mariadb-galera
+@@ Fix bad header #error which breaks other builds
+@@ Gentoo bug 525644 MDEV-6862
