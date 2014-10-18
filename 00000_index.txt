@@ -251,6 +251,12 @@
 @pn mysql
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
 
+@patch 01050_all_mysql_config_cleanup-5.6.patch
+@ver 5.06.00.00 to 5.06.99.99
+@pn mysql
+@pn percona-server
+@@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
+
 @patch 02000_all_query-logging-bypass-4.1.19.patch
 @ver 4.01.14.00 to 4.01.99.99
 @pn mysql

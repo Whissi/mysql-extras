@@ -1,0 +1,58 @@
+diff -aurN mysql.orig/scripts/mysql_config.sh mysql/scripts/mysql_config.sh
+--- mysql.orig/scripts/mysql_config.sh	2014-10-17 19:37:06.511549907 -0400
++++ mysql/scripts/mysql_config.sh	2014-10-17 19:53:44.458132867 -0400
+@@ -125,22 +125,42 @@
+ cxxflags="-I$pkgincludedir @CXXFLAGS@ " #note: end space!
+ include="-I$pkgincludedir"
+ 
+-# Remove some options that a client doesn't have to care about
+-for remove in DDBUG_OFF DSAFE_MUTEX DFORCE_INIT_OF_VARS \
+-              DEXTRA_DEBUG DHAVE_purify O 'O[0-9]' 'xO[0-9]' 'W[-A-Za-z]*' \
+-              'mtune=[-A-Za-z0-9]*' 'mcpu=[-A-Za-z0-9]*' 'march=[-A-Za-z0-9]*' \
+-              unroll2 ip mp restrict
++tmpcflags=""
++for f in $cflags
+ do
+-  # The first option we might strip will always have a space before it because
+-  # we set -I$pkgincludedir as the first option
+-  cflags=`echo "$cflags"|sed -e "s/ -$remove  */ /g"` 
+-  cxxflags=`echo "$cxxflags"|sed -e "s/ -$remove  */ /g"` 
++  case "${f}" in
++    -DDBUG_OFF) f="" ;;
++    -DSAFE_MUTEX) f="" ;;
++    -DUNIV_MUST_NOT_INLINE) f="" ;;
++    -DFORCE_INIT_OF_VARS) f="" ;;
++    -DEXTRA_DEBUG) f="" ;;
++    -DHAVE_purify) f="" ;;
++    -[ID]*) tmpcflags="${tmpcflags} ${f}" ;;
++    -[Ll]*)
++      libs="${libs} ${f}"
++      libs_r="${libs_r} ${f}"
++      embedded_libs="${embedded_libs} ${f}"
++    ;;
++  esac
+ done
+-cflags=`echo "$cflags"|sed -e 's/ *\$//'` 
+-cxxflags=`echo "$cxxflags"|sed -e 's/ *\$//'` 
++cflags="${tmpcflags# }"
++tmpcxxflags=""
++for f in $cxxflags
++do
++  case "${f}" in
++    -DDBUG_OFF) f="" ;;
++    -DSAFE_MUTEX) f="" ;;
++    -DUNIV_MUST_NOT_INLINE) f="" ;;
++    -DFORCE_INIT_OF_VARS) f="" ;;
++    -DEXTRA_DEBUG) f="" ;;
++    -DHAVE_purify) f="" ;;
++    -[ID]*) tmpcxxflags="${tmpcxxflags} ${f}" ;;
++  esac
++done
++cxxflags="${tmpcxxflags# }"
+ 
+ # Same for --libs(_r)
+-for remove in lmtmalloc static-libcxa i-static static-intel
++for remove in lmtmalloc static-libcxa i-static static-intel lprobes_mysql
+ do
+   # We know the strings starts with a space
+   libs=`echo "$libs"|sed -e "s/ -$remove  */ /g"` 
