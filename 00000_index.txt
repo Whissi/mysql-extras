@@ -1747,3 +1747,11 @@
 @pn mariadb-galera
 @@ Fix bad header #error which breaks other builds
 @@ Gentoo bug 525644 MDEV-6862
+
+@patch 20013_all_mariadb-tokudb-variable.patch
+@ver 5.05.39.00 to 5.05.99.99
+@ver 10.00.13.00 to 10.00.99.99
+@pn mariadb
+@pn mariadb-galera
+@@ Fix bad header #error which breaks other builds
+@@ Gentoo bug 525192 MDEV-6863

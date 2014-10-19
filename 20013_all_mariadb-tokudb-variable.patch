@@ -1,0 +1,12 @@
+diff -urN a/storage/tokudb/ft-index/ft/ft-ops.cc b/storage/tokudb/ft-index/ft/ft-ops.cc
+--- a/storage/tokudb/ft-index/ft/ft-ops.cc      2014-09-24 23:29:47.000000000 +0100
++++ b/storage/tokudb/ft-index/ft/ft-ops.cc      2014-10-12 19:21:39.060499831 +0100
+@@ -2237,7 +2237,7 @@
+                     nullptr, nullptr, nullptr
+                     );
+                 *target_childnum = childnum;
+-                if (r == 0 && !le_latest_is_del(leftmost_le)) {
++                if (r == 0 && !le_latest_is_del(target_le)) {
+                     *nondeleted_key_found = true;
+                 }
+             }
