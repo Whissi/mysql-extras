@@ -154,14 +154,14 @@ diff -ur mysql-old/libmysqld/CMakeLists.txt mysql/libmysqld/CMakeLists.txt
 diff -aurN a/mysql/scripts/CMakeLists.txt b/mysql/scripts/CMakeLists.txt
 --- mysql-old/scripts/CMakeLists.txt	2014-04-15 07:02:28.000000000 -0400
 +++ mysql/scripts/CMakeLists.txt	2014-04-25 19:24:14.000000000 -0400
-@@ -198,6 +198,7 @@
- SET(scriptdir ${prefix}/${INSTALL_BINDIR})
- SET(libexecdir ${prefix}/${INSTALL_SBINDIR})
- SET(pkgdatadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
+@@ -236,6 +236,7 @@
+ SET(pkglibdir ${prefix}/${INSTALL_LIBDIR})
+ SET(pkgplugindir ${prefix}/${INSTALL_PLUGINDIR})
+ SET(localstatedir ${MYSQL_DATADIR})
 +SET(elibdir ${prefix}/${INSTALL_ELIBDIR})
- IF(INSTALL_LAYOUT MATCHES "STANDALONE")
-   SET(localstatedir ${prefix}/data)
- ELSE()
+ 
+ SET(RPATH_OPTION "")
+ IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
 diff -aurN mysql-old/scripts/mysql_config.sh b/mysql/scripts/mysql_config.sh
 --- mysql-old/scripts/mysql_config.sh	2014-04-25 20:05:16.000000000 -0400
 +++ mysql/scripts/mysql_config.sh	2014-04-25 20:08:01.000000000 -0400
@@ -181,7 +181,7 @@ diff -aurN mysql-old/scripts/mysql_config.sh b/mysql/scripts/mysql_config.sh
  libs="$libs @openssl_libs@ @STATIC_NSS_FLAGS@ "
  libs_r=" $ldflags -L$pkglibdir  @RPATH_OPTION@ -lmysqlclient_r @ZLIB_DEPS@ @CLIENT_LIBS@ @openssl_libs@ "
 -embedded_libs=" $ldflags -L$pkglibdir @RPATH_OPTION@ -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
-+embedded_libs=" $ldflags -L$elibdir -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
++embedded_libs=" $ldflags -L$elibdir @RPATH_OPTION@ -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
  
  if [ -r "$pkglibdir/libmygcc.a" ]; then
    # When linking against the static library with a different version of GCC
