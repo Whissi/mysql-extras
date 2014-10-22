@@ -1,0 +1,71 @@
+diff -aruN mysql.orig/cmake/lz4.cmake mysql/cmake/lz4.cmake
+--- mysql.orig/cmake/lz4.cmake	2014-10-15 18:53:42.000000000 -0400
++++ mysql/cmake/lz4.cmake	2014-10-22 13:27:29.084405469 -0400
+@@ -12,8 +12,12 @@
+ # this program; if not, write to the Free Software Foundation, Inc.,
+ # 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ 
++OPTION(WITH_INNODB_LZ4 "Enable lz4 compression on InnoDB/XtraDB" ON)
++
+ MACRO (MYSQL_CHECK_LZ4)
+ 
++IF (WITH_INNODB_LZ4)
++
+ CHECK_INCLUDE_FILES(lz4.h HAVE_LZ4_H)
+ CHECK_LIBRARY_EXISTS(lz4 LZ4_compress_limitedOutput "" HAVE_LZ4_SHARED_LIB)
+ 
+@@ -21,10 +25,11 @@
+   ADD_DEFINITIONS(-DHAVE_LZ4=1)
+   LINK_LIBRARIES(lz4) 
+ ENDIF()
++ENDIF()
+ ENDMACRO()
+ 
+ MACRO (MYSQL_CHECK_LZ4_STATIC)
+- 
++IF (WITH_INNODB_LZ4)
+  CHECK_INCLUDE_FILES(lz4.h HAVE_LZ4_H)
+  CHECK_LIBRARY_EXISTS(liblz4.a LZ4_compress_limitedOutput "" HAVE_LZ4_LIB)
+ 
+@@ -32,4 +37,5 @@
+    ADD_DEFINITIONS(-DHAVE_LZ4=1)
+    LINK_LIBRARIES(liblz4.a)
+  ENDIF()
+-ENDMACRO()
+\ No newline at end of file
++ENDIF()
++ENDMACRO()
+diff -aruN mysql.orig/cmake/lzo.cmake mysql/cmake/lzo.cmake
+--- mysql.orig/cmake/lzo.cmake	2014-10-15 18:53:42.000000000 -0400
++++ mysql/cmake/lzo.cmake	2014-10-22 13:28:37.622202579 -0400
+@@ -12,8 +12,10 @@
+ # this program; if not, write to the Free Software Foundation, Inc.,
+ # 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ 
+-MACRO (MYSQL_CHECK_LZO_STATIC)
++OPTION(WITH_INNODB_LZO "Enable lzo compression on InnoDB/XtraDB" ON)
+ 
++MACRO (MYSQL_CHECK_LZO_STATIC)
++IF(WITH_INNODB_LZO)
+ CHECK_INCLUDE_FILES(lzo/lzo1x.h HAVE_LZO_H)
+ CHECK_LIBRARY_EXISTS(liblzo2.a lzo1x_1_compress "" HAVE_LZO_LIB)
+ 
+@@ -21,10 +23,11 @@
+   ADD_DEFINITIONS(-DHAVE_LZO=1)
+   LINK_LIBRARIES(liblzo2.a)
+ ENDIF()
++ENDIF()
+ ENDMACRO()
+ 
+ MACRO (MYSQL_CHECK_LZO)
+-
++IF(WITH_INNODB_LZO)
+ CHECK_INCLUDE_FILES(lzo/lzo1x.h HAVE_LZO_H)
+ CHECK_LIBRARY_EXISTS(lzo2 lzo1x_1_compress "" HAVE_LZO_SHARED_LIB)
+ 
+@@ -32,4 +35,5 @@
+   ADD_DEFINITIONS(-DHAVE_LZO=1)
+   LINK_LIBRARIES(lzo2)
+ ENDIF()
++ENDIF()
+ ENDMACRO()
