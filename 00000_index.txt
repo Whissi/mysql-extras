@@ -1766,3 +1766,8 @@
 @ver 10.01.01.00 to 10.99.99.99
 @pn mariadb
 @@ Remove magic dependencies on lz4 and lzo
+
+@patch 20015_all_mariadb-pkgconfig-location.patch
+@ver 10.01.01.00 to 10.99.99.99
+@pn mariadb
+@@ Allow mariadb.pc to be installed in libdir instead of sharedir

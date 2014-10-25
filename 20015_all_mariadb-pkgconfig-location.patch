@@ -1,0 +1,12 @@
+diff -aruN mysql.orig/support-files/CMakeLists.txt mysql/support-files/CMakeLists.txt
+--- mysql.orig/support-files/CMakeLists.txt	2014-10-24 22:18:52.144297645 -0400
++++ mysql/support-files/CMakeLists.txt	2014-10-24 22:37:51.303410675 -0400
+@@ -62,7 +62,7 @@
+   ENDIF()
+ 
+   CONFIGURE_FILE(mariadb.pc.in ${CMAKE_CURRENT_BINARY_DIR}/mariadb.pc @ONLY)
+-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mariadb.pc DESTINATION ${INSTALL_SHAREDIR}/pkgconfig COMPONENT Development)
++  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mariadb.pc DESTINATION ${INSTALL_LIBDIR}/pkgconfig COMPONENT Development)
+ 
+   INSTALL(FILES mysql.m4 DESTINATION ${INSTALL_SHAREDIR}/aclocal COMPONENT Development)
+   
