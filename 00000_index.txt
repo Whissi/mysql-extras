@@ -1763,7 +1763,7 @@
 
 @patch 20013_all_mariadb-tokudb-variable.patch
 @ver 5.05.39.00 to 5.05.40.99
-@ver 10.00.13.00 to 10.14.99.99
+@ver 10.00.13.00 to 10.00.14.99
 @pn mariadb
 @pn mariadb-galera
 @@ Fix bad header #error which breaks other builds
