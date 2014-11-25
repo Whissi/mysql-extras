@@ -241,7 +241,15 @@
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
 
 @patch 01050_all_mariadb_mysql_config_cleanup-5.5.patch
-@ver 5.05.00.00 to 10.00.99.99
+@ver 5.05.00.00 to 5.05.40.99
+@ver 10.00.00.00 to 10.00.14.99
+@pn mariadb
+@pn mariadb-galera
+@@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
+
+@patch 01050_all_mariadb_mysql_config_cleanup-5.5.41.patch
+@ver 5.05.41.00 to 5.05.99.99
+@ver 10.00.15.00 to 10.00.99.99
 @pn mariadb
 @pn mariadb-galera
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
