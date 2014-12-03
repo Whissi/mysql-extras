@@ -1708,7 +1708,7 @@
 @@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20007_all_cmake-debug-werror.patch
-@ver 5.05.32.00 to 5.05.99.99
+@ver 5.05.32.00 to 5.05.40.99
 @pn mysql
 @pn percona-server
 @@ Remove -Werror from USE="debug" builds
@@ -1726,6 +1726,7 @@
 @@ Remove -Werror from USE="debug" builds
 
 @patch 20007_all_cmake-debug-werror-5.6.22.patch
+@ver 5.05.41.00 to 5.05.99.99
 @ver 5.06.22.00 to 5.06.99.99
 @pn mysql
 @pn percona-server
