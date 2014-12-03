@@ -1500,7 +1500,13 @@
 @@ Fix the minimal build by reordering CMakeLists.txt
 
 @patch 20001_all_fix-minimal-build-cmake-mysql-5.5.39.patch
-@ver 5.05.39.00 to 5.05.99.99
+@ver 5.05.39.00 to 5.05.40.99
+@pn mysql
+@pn percona-server
+@@ Fix the minimal build by reordering CMakeLists.txt
+
+@patch 20001_all_fix-minimal-build-cmake-mysql-5.5.41.patch
+@ver 5.05.41.00 to 5.05.99.99
 @pn mysql
 @pn percona-server
 @@ Fix the minimal build by reordering CMakeLists.txt

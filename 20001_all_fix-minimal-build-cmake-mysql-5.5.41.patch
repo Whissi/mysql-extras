@@ -1,0 +1,50 @@
+diff -aurN mysql.orig/CMakeLists.txt mysql/CMakeLists.txt
+--- mysql.orig/CMakeLists.txt	2014-11-04 02:49:52.000000000 -0500
++++ mysql/CMakeLists.txt	2014-12-03 13:46:18.534238953 -0500
+@@ -376,6 +376,11 @@
+ ADD_SUBDIRECTORY(regex)
+ ADD_SUBDIRECTORY(mysys)
+ ADD_SUBDIRECTORY(libmysql)
++ADD_SUBDIRECTORY(client)
++ADD_SUBDIRECTORY(libservices)
++ADD_SUBDIRECTORY(scripts)
++ADD_SUBDIRECTORY(sql/share)
++ADD_SUBDIRECTORY(support-files)
+ 
+ IF(WITH_UNIT_TESTS)
+  ENABLE_TESTING()
+@@ -389,10 +394,7 @@
+ ADD_SUBDIRECTORY(extra)
+ IF(NOT WITHOUT_SERVER)
+   ADD_SUBDIRECTORY(tests)
+-  ADD_SUBDIRECTORY(client)
+   ADD_SUBDIRECTORY(sql)
+-  ADD_SUBDIRECTORY(sql/share)
+-  ADD_SUBDIRECTORY(libservices)
+   OPTION (WITH_EMBEDDED_SERVER "Compile MySQL with embedded server" OFF)
+   IF(WITH_EMBEDDED_SERVER) 
+    ADD_SUBDIRECTORY(libmysqld)
+@@ -401,12 +403,7 @@
+ 
+   ADD_SUBDIRECTORY(mysql-test)
+   ADD_SUBDIRECTORY(mysql-test/lib/My/SafeProcess)
+-  ADD_SUBDIRECTORY(support-files)
+-  ADD_SUBDIRECTORY(scripts)
+   ADD_SUBDIRECTORY(sql-bench)
+-  IF(UNIX)
+-    ADD_SUBDIRECTORY(man)
+-  ENDIF()
+   IF(EXISTS ${CMAKE_SOURCE_DIR}/internal/CMakeLists.txt)
+     ADD_SUBDIRECTORY(internal)
+   ENDIF()
+@@ -414,6 +411,10 @@
+   ADD_SUBDIRECTORY(packaging/rpm-sles)
+ ENDIF()
+ 
++IF(UNIX)
++  ADD_SUBDIRECTORY(man)
++ENDIF()
++
+ INCLUDE(cmake/abi_check.cmake)
+ INCLUDE(cmake/tags.cmake)
+ 
