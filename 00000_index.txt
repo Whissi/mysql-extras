@@ -1702,7 +1702,13 @@
 @@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-mariadb-10.1.1.patch
-@ver 10.01.01.00 to 10.99.99.99
+@ver 10.01.01.00 to 10.01.01.99
+@pn mariadb
+@@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
+
+@patch 20006_all_cmake_elib-mariadb-10.1.2.patch
+@ver 10.01.02.00 to 10.99.99.99
 @pn mariadb
 @@ Add ELIBPATH to split client and embedded libs
 @@ Also install static libs by ENABLE_STATIC_LIBS
