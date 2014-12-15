@@ -1,0 +1,213 @@
+=== modified file 'mysql-test/suite/rpl/r/rpl_parallel.result'
+--- mysql-test/suite/rpl/r/rpl_parallel.result	2014-11-13 09:31:20 +0000
++++ mysql-test/suite/rpl/r/rpl_parallel.result	2014-12-01 12:53:57 +0000
+@@ -972,6 +972,54 @@
+ SET GLOBAL slave_parallel_threads=0;
+ SET GLOBAL slave_parallel_threads=10;
+ include/start_slave.inc
++*** MDEV-7237: Parallel replication: incorrect relaylog position after stop/start the slave ***
++INSERT INTO t2 VALUES (40);
++include/stop_slave.inc
++CHANGE MASTER TO master_use_gtid=no;
++SET @old_dbug= @@GLOBAL.debug_dbug;
++SET GLOBAL debug_dbug="+d,rpl_parallel_scheduled_gtid_0_x_100";
++SET GLOBAL debug_dbug="+d,rpl_parallel_wait_for_done_trigger";
++SET GLOBAL slave_parallel_threads=0;
++SET GLOBAL slave_parallel_threads=10;
++INSERT INTO t2 VALUES (41);
++INSERT INTO t2 VALUES (42);
++DELETE FROM t2 WHERE a=40;
++INSERT INTO t2 VALUES (43);
++INSERT INTO t2 VALUES (44);
++FLUSH LOGS;
++INSERT INTO t2 VALUES (45);
++SET gtid_seq_no=100;
++INSERT INTO t2 VALUES (46);
++BEGIN;
++SELECT * FROM t2 WHERE a=40 FOR UPDATE;
++a
++40
++include/start_slave.inc
++SET debug_sync= 'now WAIT_FOR scheduled_gtid_0_x_100';
++STOP SLAVE;
++SET debug_sync= 'now WAIT_FOR wait_for_done_waiting';
++ROLLBACK;
++include/wait_for_slave_sql_to_stop.inc
++SELECT * FROM t2 WHERE a >= 40 ORDER BY a;
++a
++41
++42
++include/start_slave.inc
++SELECT * FROM t2 WHERE a >= 40 ORDER BY a;
++a
++41
++42
++43
++44
++45
++46
++include/stop_slave.inc
++SET GLOBAL debug_dbug=@old_dbug;
++SET DEBUG_SYNC= 'RESET';
++SET GLOBAL slave_parallel_threads=0;
++SET GLOBAL slave_parallel_threads=10;
++CHANGE MASTER TO master_use_gtid=slave_pos;
++include/start_slave.inc
+ include/stop_slave.inc
+ SET GLOBAL slave_parallel_threads=@old_parallel_threads;
+ include/start_slave.inc
+
+=== modified file 'mysql-test/suite/rpl/t/rpl_parallel.test'
+--- mysql-test/suite/rpl/t/rpl_parallel.test	2014-11-13 09:31:20 +0000
++++ mysql-test/suite/rpl/t/rpl_parallel.test	2014-12-01 12:53:57 +0000
+@@ -1535,6 +1535,99 @@
+ --source include/start_slave.inc
+ 
+ 
++--echo *** MDEV-7237: Parallel replication: incorrect relaylog position after stop/start the slave ***
++--connection server_1
++INSERT INTO t2 VALUES (40);
++--save_master_pos
++
++--connection server_2
++--sync_with_master
++--source include/stop_slave.inc
++CHANGE MASTER TO master_use_gtid=no;
++SET @old_dbug= @@GLOBAL.debug_dbug;
++# This DBUG injection causes a DEBUG_SYNC signal "scheduled_gtid_0_x_100" when
++# GTID 0-1-100 has been scheduled for and fetched by a worker thread.
++SET GLOBAL debug_dbug="+d,rpl_parallel_scheduled_gtid_0_x_100";
++# This DBUG injection causes a DEBUG_SYNC signal "wait_for_done_waiting" when
++# STOP SLAVE has signalled all worker threads to stop.
++SET GLOBAL debug_dbug="+d,rpl_parallel_wait_for_done_trigger";
++# Reset worker threads to make DBUG setting catch on.
++SET GLOBAL slave_parallel_threads=0;
++SET GLOBAL slave_parallel_threads=10;
++
++
++--connection server_1
++# Setup some transaction for the slave to replicate.
++INSERT INTO t2 VALUES (41);
++INSERT INTO t2 VALUES (42);
++DELETE FROM t2 WHERE a=40;
++INSERT INTO t2 VALUES (43);
++INSERT INTO t2 VALUES (44);
++# Force the slave to switch to a new relay log file.
++FLUSH LOGS;
++INSERT INTO t2 VALUES (45);
++# Inject a GTID 0-1-100, which will trigger a DEBUG_SYNC signal when this
++# transaction has been fetched by a worker thread.
++SET gtid_seq_no=100;
++INSERT INTO t2 VALUES (46);
++--save_master_pos
++
++--connection con_temp2
++# Temporarily block the DELETE on a=40 from completing.
++BEGIN;
++SELECT * FROM t2 WHERE a=40 FOR UPDATE;
++
++
++--connection server_2
++--source include/start_slave.inc
++
++# The DBUG injection set above will make the worker thread signal the following
++# debug_sync when the GTID 0-1-100 has been reached by a worker thread.
++# Thus, at this point, the SQL driver thread has reached the next
++# relay log file name, while a worker thread is still processing a
++# transaction in the previous relay log file, blocked on the SELECT FOR
++# UPDATE.
++SET debug_sync= 'now WAIT_FOR scheduled_gtid_0_x_100';
++# At this point, the SQL driver thread is in the new relay log file, while
++# the DELETE from the old relay log file is not yet complete. We will stop
++# the slave at this point. The bug was that the DELETE statement would
++# update the slave position to the _new_ relay log file name instead of
++# its own old file name. Thus, by stoping and restarting the slave at this
++# point, we would get an error at restart due to incorrect position. (If
++# we would let the slave catch up before stopping, the incorrect position
++# would be corrected by a later transaction).
++
++send STOP SLAVE;
++
++--connection con_temp2
++# Wait for STOP SLAVE to have proceeded sufficiently that it has signalled
++# all worker threads to stop; this ensures that we will stop after the DELETE
++# transaction (and not after a later transaction that might have been able
++# to set a fixed position).
++SET debug_sync= 'now WAIT_FOR wait_for_done_waiting';
++# Now release the row lock that was blocking the replication of DELETE.
++ROLLBACK;
++
++--connection server_2
++reap;
++--source include/wait_for_slave_sql_to_stop.inc
++SELECT * FROM t2 WHERE a >= 40 ORDER BY a;
++# Now restart the slave. With the bug present, this would start at an
++# incorrect relay log position, causing relay log read error (or if unlucky,
++# silently skip a number of events).
++--source include/start_slave.inc
++--sync_with_master
++SELECT * FROM t2 WHERE a >= 40 ORDER BY a;
++--source include/stop_slave.inc
++SET GLOBAL debug_dbug=@old_dbug;
++SET DEBUG_SYNC= 'RESET';
++SET GLOBAL slave_parallel_threads=0;
++SET GLOBAL slave_parallel_threads=10;
++CHANGE MASTER TO master_use_gtid=slave_pos;
++--source include/start_slave.inc
++
++
++# Clean up.
+ --connection server_2
+ --source include/stop_slave.inc
+ SET GLOBAL slave_parallel_threads=@old_parallel_threads;
+
+=== modified file 'sql/rpl_parallel.cc'
+--- sql/rpl_parallel.cc	2014-11-17 11:42:02 +0000
++++ sql/rpl_parallel.cc	2014-12-01 12:53:57 +0000
+@@ -631,6 +631,14 @@
+         PSI_stage_info old_stage;
+         uint64 wait_count;
+ 
++        DBUG_EXECUTE_IF("rpl_parallel_scheduled_gtid_0_x_100", {
++            if (rgi->current_gtid.domain_id == 0 &&
++                rgi->current_gtid.seq_no == 100) {
++              debug_sync_set_action(thd,
++                      STRING_WITH_LEN("now SIGNAL scheduled_gtid_0_x_100"));
++            }
++          });
++
+         in_event_group= true;
+         /*
+           If the standalone flag is set, then this event group consists of a
+@@ -1131,9 +1131,9 @@
+   inuse_relaylog *ir= accumulated_ir_last;
+   if (ir)
+   {
+-    my_atomic_rwlock_wrlock(&ir->rli->inuse_relaylog_atomic_lock);
++    my_atomic_rwlock_wrlock(&ir->inuse_relaylog_atomic_lock);
+     my_atomic_add64(&ir->dequeued_count, accumulated_ir_count);
+-    my_atomic_rwlock_wrunlock(&ir->rli->inuse_relaylog_atomic_lock);
++    my_atomic_rwlock_wrunlock(&ir->inuse_relaylog_atomic_lock);
+     accumulated_ir_count= 0;
+     accumulated_ir_last= NULL;
+   }
+
+
+=== modified file 'sql/rpl_rli.cc'
+--- sql/rpl_rli.cc	2014-11-25 11:19:48 +0000
++++ sql/rpl_rli.cc	2014-12-01 12:53:57 +0000
+@@ -986,11 +986,11 @@
+   if (rgi->is_parallel_exec)
+   {
+     /* In case of parallel replication, do not update the position backwards. */
+-    int cmp= strcmp(group_relay_log_name, event_relay_log_name);
++    int cmp= strcmp(group_relay_log_name, rgi->event_relay_log_name);
+     if (cmp < 0)
+     {
+       group_relay_log_pos= rgi->future_event_relay_log_pos;
+-      strmake_buf(group_relay_log_name, event_relay_log_name);
++      strmake_buf(group_relay_log_name, rgi->event_relay_log_name);
+       notify_group_relay_log_name_update();
+     } else if (cmp == 0 && group_relay_log_pos < rgi->future_event_relay_log_pos)
+       group_relay_log_pos= rgi->future_event_relay_log_pos;
+

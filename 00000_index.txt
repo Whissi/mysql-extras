@@ -1811,3 +1811,10 @@
 @ver 10.01.01.00 to 10.99.99.99
 @pn mariadb
 @@ Allow mariadb.pc to be installed in libdir instead of sharedir
+
+@patch 20016_all_mariadb-parallel-replication-fix-10.0.15.patch
+@ver 10.00.15.00 to 10.00.15.99
+@pn mariadb
+@pn mariadb-galera
+@@ Fix build on sparc and other arches with no atomics
+@@ Also fix critical replication bug discovered shortly after release
