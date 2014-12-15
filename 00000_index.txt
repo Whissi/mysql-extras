@@ -1817,4 +1817,4 @@
 @pn mariadb
 @pn mariadb-galera
 @@ Fix build on sparc and other arches with no atomics
-@@ Also fix critical replication bug discovered shortly after release
+@@ Also fix critical replication bug discovered shortly after release MDEV-7237
