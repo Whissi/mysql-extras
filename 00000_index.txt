@@ -1676,7 +1676,13 @@
 @@ Also install static libs by ENABLE_STATIC_LIBS
 
 @patch 20006_all_cmake_elib-percona-5.6.19.patch
-@ver 5.06.19.00 to 5.06.99.99
+@ver 5.06.19.00 to 5.06.21.99
+@pn percona-server
+@@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
+
+@patch 20006_all_cmake_elib-percona-5.6.22.patch
+@ver 5.06.22.00 to 5.06.99.99
 @pn percona-server
 @@ Add ELIBPATH to split client and embedded libs
 @@ Also install static libs by ENABLE_STATIC_LIBS
