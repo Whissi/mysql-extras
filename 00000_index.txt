@@ -1824,3 +1824,12 @@
 @pn mariadb-galera
 @@ Fix build on sparc and other arches with no atomics
 @@ Also fix critical replication bug discovered shortly after release MDEV-7237
+
+@patch 20017_all_mysql-openssl-cmake-detection.patch
+@ver 5.06.00.00 to 5.07.99.99
+@pn mysql
+@pn percona-server
+@@ Fix detection of OpenSSL 1.0.2
+@@ Bug 537872
+@@ Upstream bug 75622
+
