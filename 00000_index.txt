@@ -259,6 +259,11 @@
 @pn mysql
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
 
+@patch 01050_all_mysql_config_cleanup-5.5.patch
+@ver 7.02.00.00 to 7.02.99.99
+@pn mysql-cluster
+@@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
+
 @patch 01050_all_mysql_config_cleanup-5.6.patch
 @ver 5.06.00.00 to 5.06.99.99
 @pn mysql
@@ -343,6 +348,11 @@
 @patch 02040_all_embedded-library-shared-5.5.10.patch
 @ver 5.05.10.00 to 5.07.99.99
 @pn mysql
+@@ Take libmysqld to be a proper shared library.
+
+@patch 02040_all_embedded-library-shared-5.5.10.patch
+@ver 7.02.01.00 to 7.99.99.99
+@pn mysql-cluster
 @@ Take libmysqld to be a proper shared library.
 
 @patch 02040_all_embedded-library-shared-5.5.10.patch
@@ -1516,6 +1526,11 @@
 @pn percona-server
 @@ Fix the minimal build by reordering CMakeLists.txt
 
+@patch 20001_all_fix-minimal-build-cmake-mysql-5.5.41.patch
+@ver 7.02.19.00 to 7.02.99.99
+@pn mysql-cluster
+@@ Fix the minimal build by reordering CMakeLists.txt
+
 @patch 20001_all_fix-minimal-build-cmake-mysql-5.6.patch
 @ver 5.06.17.00 to 5.06.19.99
 @pn mysql
@@ -1569,6 +1584,11 @@
 @ver 5.05.00.00 to 5.05.99.99
 @pn mysql
 @pn percona-server
+@@ Bug 442000, upstream 62769 compilation failure on arm and possibly other arches where va_list is a struct or array.
+
+@patch 20002_all_mysql-va-list.patch
+@ver 7.02.01.00 to 7.02.99.99
+@pn mysql-cluster
 @@ Bug 442000, upstream 62769 compilation failure on arm and possibly other arches where va_list is a struct or array.
 
 @patch 20002_all_mysql-va-list-5.6.patch
@@ -1636,6 +1656,12 @@
 @patch 20006_all_cmake_elib-mysql-5.5.37.patch
 @ver 5.05.37.00 to 5.05.99.99
 @pn mysql
+@@ Add ELIBPATH to split client and embedded libs
+@@ Also install static libs by ENABLE_STATIC_LIBS
+
+@patch 20006_all_cmake_elib-mysql-cluster-5.5.37.patch
+@ver 7.02.16.00 to 7.02.99.99
+@pn mysql-cluster
 @@ Add ELIBPATH to split client and embedded libs
 @@ Also install static libs by ENABLE_STATIC_LIBS
 
@@ -1757,7 +1783,7 @@
 @@ Remove -Werror from USE="debug" builds
 
 @patch 20007_all_cmake-debug-werror-5.6.22.patch
-@ver 7.03.00.00 to 7.99.99.99
+@ver 7.02.19.00 to 7.99.99.99
 @pn mysql-cluster
 @@ Remove -Werror from USE="debug" builds
 
@@ -1768,7 +1794,7 @@
 @@ Backport tzinfo symlink fix from MariaDB bug 491176
 
 @patch 20008_all_mysql-tzinfo-symlink.patch
-@ver 7.03.00.00 to 7.99.99.99
+@ver 7.02.16.00 to 7.99.99.99
 @pn mysql-cluster
 @@ Backport tzinfo symlink fix from MariaDB bug 491176
 
@@ -1783,6 +1809,11 @@
 @ver 5.05.38.00 to 5.05.99.99
 @pn mysql
 @pn percona-server
+@@ Export missing symbols
+
+@patch 20009_all_mysql_myodbc_symbol_fix-5.5.38.patch
+@ver 7.02.18.00 to 7.02.99.99
+@pn mysql-cluster
 @@ Export missing symbols
 
 @patch 20009_all_mysql_myodbc_symbol_fix-5.6.patch
