@@ -1898,3 +1898,8 @@
 @@ Bug 537872
 @@ Upstream bug 75622
 
+@patch 30000_all_mysql-cluster-multilib-property.patch
+@ver 7.03.00.00 to 7.99.99.99
+@pn mysql-cluster
+@@ Fix property added to something not built with WITHOUT_SERVER
+
