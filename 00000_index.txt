@@ -1788,7 +1788,13 @@
 @@ Remove -Werror from USE="debug" builds
 
 @patch 20008_all_mysql-tzinfo-symlink.patch
-@ver 5.05.36.00 to 5.99.99.99
+@ver 5.05.36.00 to 5.06.99.99
+@pn mysql
+@pn percona-server
+@@ Backport tzinfo symlink fix from MariaDB bug 491176
+
+@patch 20008_all_mysql-tzinfo-symlink-5.7.6.patch
+@ver 5.07.00.00 to 5.99.99.99
 @pn mysql
 @pn percona-server
 @@ Backport tzinfo symlink fix from MariaDB bug 491176
@@ -1817,7 +1823,13 @@
 @@ Export missing symbols
 
 @patch 20009_all_mysql_myodbc_symbol_fix-5.6.patch
-@ver 5.06.00.00 to 5.07.99.99
+@ver 5.06.00.00 to 5.06.99.99
+@pn mysql
+@pn percona-server
+@@ Export missing symbols
+
+@patch 20009_all_mysql_myodbc_symbol_fix-5.7.6.patch
+@ver 5.07.00.00 to 5.99.99.99
 @pn mysql
 @pn percona-server
 @@ Export missing symbols
