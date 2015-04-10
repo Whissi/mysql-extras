@@ -1896,7 +1896,8 @@
 @@ Also fix critical replication bug discovered shortly after release MDEV-7237
 
 @patch 20017_all_mysql-openssl-cmake-detection.patch
-@ver 5.06.00.00 to 5.07.99.99
+@ver 5.06.00.00 to 5.06.23.99
+@ver 5.07.00.00 to 5.07.06.99
 @pn mysql
 @pn percona-server
 @@ Fix detection of OpenSSL 1.0.2
