@@ -1916,3 +1916,9 @@
 @pn mysql-cluster
 @@ Fix property added to something not built with WITHOUT_SERVER
 
+@patch 200018_all_mariadb-upgrade-crash-5.5.43.patch
+@ver 5.05.43.00 to 5.05.43.99
+@pn mariadb
+@pn mariadb-galera
+@@ Fix crash of mysql_upgrade and the REPAIR VIEW command
+@@ Upstream MDEV-8115
