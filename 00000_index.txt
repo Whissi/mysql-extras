@@ -1922,3 +1922,23 @@
 @pn mariadb-galera
 @@ Fix crash of mysql_upgrade and the REPAIR VIEW command
 @@ Upstream MDEV-8115
+
+@patch 20018_all_mariadb-10.0.20-without-clientlibs-tools.patch
+@ver 10.00.20.00 to 10.00.99.99
+@pn mariadb
+@@ Split building of client libraries, server and client tools
+
+@patch 20018_all_mariadb-galera-10.0.20-without-clientlibs-tools.patch
+@ver 10.00.20.00 to 10.00.99.99
+@pn mariadb-galera
+@@ Split building of client libraries, server and client tools
+
+@patch 20018_all_mysql-5.6.25-without-clientlibs-tools.patch
+@ver 5.06.25.00 to 5.06.99.99
+@pn mysql
+@@ Split building of client libraries, server and client tools
+
+@patch 20018_all_percona-server-5.6.25-without-clientlibs-tools.patch
+@ver 5.06.25.00 to 5.06.99.99
+@pn percona-server
+@@ Split building of client libraries, server and client tools
