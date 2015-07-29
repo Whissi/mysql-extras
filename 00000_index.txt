@@ -1942,3 +1942,9 @@
 @ver 5.06.25.00 to 5.06.99.99
 @pn percona-server
 @@ Split building of client libraries, server and client tools
+
+@patch 20019_all_mysql-5.5-mtr-perl-deprecation.patch
+@ver 5.05.45.00 to 5.05.99.99
+@pn mysql
+@@ Fix deprecated perl array defined syntax on mtr test script
+@@ Ported forward from mysql 5.6; Oracle bug 18145121

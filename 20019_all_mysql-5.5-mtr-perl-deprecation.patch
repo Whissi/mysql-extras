@@ -1,0 +1,24 @@
+diff -aurN a/mysql-test/lib/mtr_cases.pm b/mysql-test/lib/mtr_cases.pm
+--- a/mysql-test/lib/mtr_cases.pm	2015-06-25 09:44:36.000000000 -0400
++++ b/mysql-test/lib/mtr_cases.pm	2015-07-29 14:44:05.964091000 -0400
+@@ -336,7 +336,7 @@
+   # Build a hash of disabled testcases for this suite
+   # ----------------------------------------------------------------------
+   my %disabled;
+-  my @disabled_collection= @{$opt_skip_test_list} if defined @{$opt_skip_test_list};
++  my @disabled_collection= @{$opt_skip_test_list} if $opt_skip_test_list;
+   unshift (@disabled_collection, "$testdir/disabled.def");
+   for my $skip (@disabled_collection)
+     {
+diff -aurN a/mysql-test/mysql-test-run.pl b/mysql-test/mysql-test-run.pl
+--- a/mysql-test/mysql-test-run.pl	2015-06-25 09:44:36.000000000 -0400
++++ b/mysql-test/mysql-test-run.pl	2015-07-29 14:34:54.796091000 -0400
+@@ -490,7 +490,7 @@
+     }
+   }
+ 
+-  if ( not defined @$completed ) {
++  if ( not @$completed ) {
+     mtr_error("Test suite aborted");
+   }
+ 
