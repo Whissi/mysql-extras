@@ -1934,6 +1934,11 @@
 @pn mariadb
 @@ Split building of client libraries, server and client tools
 
+@patch 20018_all_mariadb-10.1.7-without-clientlibs-tools.patch
+@ver 10.01.07.00 to 10.01.99.99
+@pn mariadb
+@@ Split building of client libraries, server and client tools
+
 @patch 20018_all_mariadb-galera-10.0.20-without-clientlibs-tools.patch
 @ver 10.00.20.00 to 10.00.99.99
 @pn mariadb-galera
