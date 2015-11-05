@@ -1965,3 +1965,11 @@
 @pn mysql
 @@ Fix deprecated perl array defined syntax on mtr test script
 @@ Ported forward from mysql 5.6; Oracle bug 18145121
+
+@patch 20020_all_mysql-5.6-events_1-bug-78899.patch
+@ver 5.06.00.00 to 5.06.27.99
+@pn mysql
+@pn percona-server
+@@ Fix events_1 test for October 2015
+@@ Patch backported from mariadb
+@@ Bug 564968 Upstream bug 78899

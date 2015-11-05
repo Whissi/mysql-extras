@@ -1,0 +1,24 @@
+diff -rupN old/mysql/mysql-test/r/events_1.result new/mysql/mysql-test/r/events_1.result
+--- old/mysql/mysql-test/r/events_1.result	2015-09-14 17:49:16.000000000 +0200
++++ new/mysql/mysql-test/r/events_1.result	2015-10-29 20:53:40.748451431 +0100
+@@ -114,7 +114,7 @@ create table t_event3 (a int, b float);
+ drop event if exists event3;
+ Warnings:
+ Note	1305	Event event3 does not exist
+-create event event3 on schedule every 50 + 10 minute starts date_add("20100101", interval 5 minute) ends date_add("20151010", interval 5 day) comment "portokala_comment" DO insert into t_event3 values (unix_timestamp(), rand());
++create event event3 on schedule every 50 + 10 minute starts date_add("20100101", interval 5 minute) ends date_add("20251010", interval 5 day) comment "portokala_comment" DO insert into t_event3 values (unix_timestamp(), rand());
+ select count(*) from t_event3;
+ count(*)
+ 0
+diff -rupN old/mysql/mysql-test/t/events_1.test new/mysql/mysql-test/t/events_1.test
+--- old/mysql/mysql-test/t/events_1.test	2015-09-14 17:49:16.000000000 +0200
++++ new/mysql/mysql-test/t/events_1.test	2015-10-29 20:54:38.959698756 +0100
+@@ -125,7 +125,7 @@ drop event existant;
+ 
+ create table t_event3 (a int, b float);
+ drop event if exists event3;
+-create event event3 on schedule every 50 + 10 minute starts date_add("20100101", interval 5 minute) ends date_add("20151010", interval 5 day) comment "portokala_comment" DO insert into t_event3 values (unix_timestamp(), rand());
++create event event3 on schedule every 50 + 10 minute starts date_add("20100101", interval 5 minute) ends date_add("20251010", interval 5 day) comment "portokala_comment" DO insert into t_event3 values (unix_timestamp(), rand());
+ let $wait_condition=SELECT count(*)=0 from t_event3;
+ --source include/wait_condition.inc
+ select count(*) from t_event3;
