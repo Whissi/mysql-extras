@@ -1,65 +1,21 @@
-@patch 00100_all_mysql-4.0-my-print-defaults.patch
-@ver 4.00.00.00 to 4.00.26.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ /etc => /etc/mysql
-
 @patch 00100_all_default-dir-4.0.27.patch
 @ver 4.00.27.00 to 4.00.27.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ /etc => /etc/mysql
-
-@patch 00100_all_default-dir-4.0.28.patch
-@ver 4.00.28.00 to 4.00.99.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ /etc => /etc/mysql
 
 @patch 00100_all_default-dir-4.1.15.patch
 @ver 4.01.15.00 to 4.01.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Move config directory to the gentoo default
-
-@patch 00100_all_default-dir-5.0.19.patch
-@ver 5.00.19.00 to 5.00.19.99
-@ver 5.01.07.00 to 5.01.09.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ upstream http://lists.mysql.com/commits/3885?f=plain
-@@ fix MySQL Bug#15069
-@@ does not fix gentoo Bug#126054
 
 @patch 00200_all_gentoo-nptl-4.0.18.patch
 @ver 4.00.18.00 to 4.00.27.99
-@ver 4.01.00.00 to 4.01.11.99
-@ver 5.00.00.00 to 5.00.03.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Add support for NPTL
 
 @patch 00300_all_thrssl-4.0.patch
 @ver 4.00.00.00 to 4.00.27.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Link libmysqlclient_r against ssl
-# attempt to get libmysqlclient_r linked against ssl if USE="ssl" enabled
-# i would really prefer to fix this at the Makefile.am level, but can't
-# get the software to autoreconf as distributed - too many missing files
-
-@patch 00300_all_thrssl-4.0.28.patch
-@ver 4.00.28.00 to 4.00.99.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Link libmysqlclient_r against ssl
 # attempt to get libmysqlclient_r linked against ssl if USE="ssl" enabled
 # i would really prefer to fix this at the Makefile.am level, but can't
@@ -67,45 +23,21 @@
 
 @patch 00300_all_thrssl-4.1.21.patch
 @ver 4.01.21.00 to 4.01.22.99
-@ver 5.00.00.00 to 5.00.04.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Link libmysqlclient_r against ssl
-
-@patch 00300_all_thrssl-4.1.23.patch
-@ver 4.01.23.00 to 4.01.99.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Link libmysqlclient_r against ssl
 
 @patch 00350_x86_asm-pic-fixes-4.0.27.patch
 @ver 4.00.25.00 to 4.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ remove page relocations
 @@ _many_ thanks to pageexec@freemail.hu
 
 @patch 00350_x86_asm-pic-fixes-4.1.12.patch
 @ver 4.01.12.00 to 4.01.99.99
 @ver 5.00.12.00 to 5.00.99.99
-@ver 5.01.00.00 to 5.01.10.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ remove page relocations
 @@ Most part of the original patch has already been accepted by MysQL,
-@@ here is the remaining.
-@@ _many_ thanks to pageexec@freemail.hu
-
-@patch 00350_x86_asm-pic-fixes-5.1.41.patch
-@ver 5.01.39.00 to 5.01.55.99
-@pn mysql
-@pn mariadb
-@@ remove page relocations
-@@ Most of the original patch has already been accepted by MysQL,
 @@ here is the remaining.
 @@ _many_ thanks to pageexec@freemail.hu
 
@@ -121,113 +53,21 @@
 @patch 00400_all_tcpd-vars-fix-4.0.14.patch
 @ver 4.00.14.00 to 4.01.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 
 @patch 00600_all_nisam_maykeylen-4.0.27.patch
 @ver 4.00.00.00 to 4.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Enlarge max key length
-
-@patch 00800_all_slot_script-4.0.patch
-@ver 4.00.26.00 to 4.00.99.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-4.1.16.patch
-@ver 4.01.16.00 to 4.01.22.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-4.1.23.patch
-@ver 4.01.23.00 to 4.01.99.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.0.17.patch
-@ver 5.01.00.00 to 5.01.08.99
-@ver 5.00.17.00 to 5.00.20.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.0.21.patch
-@ver 5.00.21.00 to 5.00.33.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.0.34.patch
-@ver 5.00.34.00 to 5.00.99.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.1.10.patch
-@ver 5.01.09.00 to 5.01.11.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.1.12.patch
-@ver 5.01.12.00 to 5.01.13.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.1.14.patch
-@ver 5.01.14.00 to 5.01.14.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00800_all_slot_script-5.1.15.patch
-@ver 5.01.15.00 to 5.02.99.99
-@pn mysql-slotted
-@@ add slot MySQL support to scripts utilities
-
-@patch 00810_all_slot_manager-5.0.19.patch
-@ver 5.00.19.00 to 5.00.99.99
-@pn mysql-slotted
-@@ add slot support for mysqlmanager
-
-@patch 00810_all_slot_manager-5.1.7.patch
-@ver 5.01.07.00 to 5.01.08.99
-@pn mysql-slotted
-@@ add slot support for mysqlmanager
-
-@patch 00810_all_slot_manager-5.1.10.patch
-@ver 5.01.09.00 to 5.02.09.99
-@pn mysql-slotted
-@@ add slot support for mysqlmanager
-
-@patch 01000_all_bug23427-abi-breakage-5.0.26.patch
-@ver 5.00.26.00 to 5.00.26.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix MySQL bug #23427
-
-@patch 01010_all_bootstrap_no_plugin.patch
-@ver 5.01.13.00 to 5.01.41.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ prevent loading of modules from plugin table when in bootstrap mode
-@@ Thanks solar, bug #158777
-@@ TODO: Need to check the status with 5.1.41
 
 @patch 01050_all_mysql_config_cleanup.patch
 @ver 4.01.22.00 to 4.01.99.99
-@ver 5.00.26.00 to 5.00.56.99
-@ver 5.01.21.99 to 5.01.38.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
 
 @patch 01050_all_mysql_config_cleanup-5.0.60.patch
 @ver 5.00.60.00 to 5.00.86.99
 @ver 5.01.00.00 to 5.01.21.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ fix bug #156301 mysql_config wrongly retains too much info from CFLAGS
 
 @patch 01050_all_mysql_config_cleanup-5.1.41.patch
@@ -278,65 +118,11 @@
 @patch 02000_all_query-logging-bypass-4.1.19.patch
 @ver 4.01.14.00 to 4.01.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Fix bug #128713
 @@ dev-db/mysql: Query Logging Bypass Vulnerability (CVE-2006-0903)
-
-@patch 02000_all_query-logging-bypass-5.0.21.patch
-@ver 5.00.00.00 to 5.00.23.99
-@ver 5.01.00.00 to 5.01.10.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix bug #128713
-@@ dev-db/mysql: Query Logging Bypass Vulnerability (CVE-2006-0903)
-
-@patch 02020_all_embedded-library-compile-5.0.38.patch
-@ver 5.00.38.00 to 5.00.39.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Compile fix for USE=embedded
-
-@patch 02040_all_embedded-library-shared-5.0.76.patch
-@ver 5.0.76.00 to 5.00.79.99
-@pn mysql
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-5.0.77.patch
-@ver 5.0.77.00 to 5.00.99.99
-@pn mysql-community
-@@ Take libmysqld to be a proper shared library.
-
-# This is really a symlink to the old mysql-community version
-@patch 02040_all_embedded-library-shared-5.0.83.patch
-@ver 5.0.83.00 to 5.00.91.99
-@pn mysql
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-5.0.92.patch
-@ver 5.0.92.00 to 5.00.95.99
-@pn mysql
-@@ Take libmysqld to be a proper shared library.
 
 @patch 02040_all_embedded-library-shared-5.0.96.patch
 @ver 5.0.96.00 to 5.00.99.99
-@pn mysql
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-5.1.43.patch
-@ver 5.01.43.00 to 5.01.49.99
-@pn mysql
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-5.1.50.patch
-@ver 5.01.50.00 to 5.01.59.99
-@pn mysql
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-5.1.60.patch
-@ver 5.01.60.00 to 5.01.68.99
 @pn mysql
 @@ Take libmysqld to be a proper shared library.
 
@@ -348,6 +134,7 @@
 @patch 02040_all_embedded-library-shared-5.5.10.patch
 @ver 5.05.10.00 to 5.07.99.99
 @pn mysql
+@pn percona-server
 @@ Take libmysqld to be a proper shared library.
 
 @patch 02040_all_embedded-library-shared-5.5.10.patch
@@ -355,96 +142,35 @@
 @pn mysql-cluster
 @@ Take libmysqld to be a proper shared library.
 
-@patch 02040_all_embedded-library-shared-5.5.10.patch
-@ver 5.05.10.00 to 5.07.99.99
-@pn percona-server
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-maria-5.1.50.patch
-@ver 5.01.50.00 to 5.01.52.99
-@pn mariadb
-@@ Take libmysqld to be a proper shared library.
-
-@patch 02040_all_embedded-library-shared-maria-5.2.03.patch
-@ver 5.02.03.00 to 5.02.03.99
-@pn mariadb
-@@ Take libmysqld to be a proper shared library.
-
 @patch 04000_all_mysqld-safe-sh-4.0.27.patch
 @ver 4.00.00.00 to 4.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Change paths detection in mysqld_safe
 
 @patch 04010_all_install-db-sh-4.0.27.patch
 @ver 4.00.00.00 to 4.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Change an output comment in mysql_install_db
 
 @patch 07000_all_mysqldump-missing-cfgfile-fix-4.1.21.patch
 @ver 4.01.21.00 to 4.01.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Add configuration section for mysqldump
 
 @patch 07010_all_rpl000015-portsobst-fix-4.1.21.patch
 @ver 4.01.21.00 to 4.01.22.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ normalize port 3306 in tests
-
-@patch 07010_all_rpl000015-portsobst-fix-4.1.23.patch
-@ver 4.01.23.00 to 4.01.99.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ normalize port 3306 in tests
-
-@patch 07010_all_rpl000015-portsobst-fix-5.0.26.patch
-@ver 5.00.26.00 to 5.00.31.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ normalize port 3306 in tests
-
-@patch 07020_all_trigger-rename-fail-as-root-5.0.26.patch
-@ver 5.00.26.00 to 5.00.33.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ portage normally ran as root, MySQL tests are designed to be used
-@@ with lower priviledges
-
-@patch 07020_all_trigger-rename-fail-as-root-5.0.34.patch
-@ver 5.00.34.00 to 5.00.34.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ portage normally ran as root, MySQL tests are designed to be used
-@@ with lower priviledges
 
 @patch 07030_all_test-rpl_rotate_logs-5.0.21.patch
 @ver 5.00.26.00 to 5.00.99.99
-@ver 5.01.00.00 to 5.01.15.99
-@ver 5.02.00.00 to 5.02.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 
-@patch 07040_all_disable_mybug_9735_test.patch
-@ver 5.00.26.00 to 5.00.81.99
-@ver 5.01.00.00 to 5.01.21.99
+@patch 07110_all_mysql_gcc-4.2_5.1.73.patch
+@ver 5.01.73.00 to 5.01.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ disable a test that fail on longtext field length, the expected value is
-@@ three times the returned one, look like a multibyte character related
-@@ failure.
+@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
+@@ FIXME: Testing patch - applies cleanly
 
 @patch 07040_all_disable_mybug_9735_test-5.1.41.patch
 @ver 5.01.39.00 to 5.01.99.99
@@ -454,281 +180,52 @@
 @@ three times the returned one, look like a multibyte character related
 @@ failure.
 
-@patch 07050_all_we-are-in-2007-now.patch
-@ver 5.00.26.00 to 5.00.32.99
-@ver 5.01.14.00 to 5.01.14.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ the view.test is year dependant
-
-@patch 07060_all_fix-nullpointer-dos.patch
-@ver 5.00.26.00 to 5.00.39.99
-@ver 5.01.00.00 to 5.01.15.99
-@ver 5.02.00.00 to 5.02.99.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix gentoo bug 171934
-
-@patch 07070_all_fix-nullpointer-dos-testcase.patch
-@ver 5.00.26.00 to 5.00.39.99
-@ver 5.01.00.00 to 5.01.15.99
-@ver 5.02.00.00 to 5.02.99.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Testcase for fix to gentoo bug 171934 (upstream bug #27513)
-
-@patch 07080_all_mysql_client_test-fix-pointer-aliasing-mysqlbug27383.patch
-@ver 5.00.42.00 to 5.00.44.99
-@ver 5.01.00.00 to 5.01.15.99
-@ver 5.02.00.00 to 5.02.09.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix for pointer aliasing that breaks mysql_client_test (upstream bug #27393)
-
-@patch 07090_all_innodb_spatial_crash_mybug_32125_5.0.patch
-@ver 5.00.42.00 to 5.00.53.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix for InnoDB 'CONTAINS' DoS (gentoo bug #198988, upstream bug #32125)
-
-@patch 07090_all_innodb_spatial_crash_mybug_32125_5.1.patch
-@ver 5.01.22.00 to 5.01.38.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix for InnoDB 'CONTAINS' DoS (gentoo bug #198988, upstream bug #32125)
-
-@patch 07100_all_respect_tmpdir_filesort_mybug_30287_5.0.patch
-@ver 5.00.44.00 to 5.00.47.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix for TMPDIR not being used during filesot (upstream bug #30287)
-
-@patch 07100_all_respect_tmpdir_filesort_mybug_30287_5.1.patch
-@ver 5.01.20.00 to 5.01.21.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Fix for TMPDIR not being used during filesot (upstream bug #30287)
-
-@patch 07110_all_mysql_gcc-4.2.patch
-@ver 5.00.42.00 to 5.00.50.99
-@ver 5.01.21.99 to 5.01.22.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-
-@patch 07110_all_mysql_gcc-4.2_5.0.54.patch
-@ver 5.00.54.00 to 5.00.55.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-# 5.0.56 and newer, as well as 5.0.51a do not need the MYSQL_MIN gcc-4.2 fix
-# anymore.
-
-@patch 07110_all_mysql_gcc-4.2_5.1.39.patch
-@ver 5.01.39.00 to 5.01.39.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.41.patch
-@ver 5.01.41.00 to 5.01.41.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.42.patch
-@ver 5.01.42.00 to 5.01.42.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.43.patch
-@ver 5.01.43.00 to 5.01.45.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.46.patch
-@ver 5.01.46.00 to 5.01.48.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.49.patch
-@ver 5.01.49.00 to 5.01.49.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.50.patch
-@ver 5.01.50.00 to 5.01.50.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.51.patch
-@ver 5.01.51.00 to 5.01.55.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.56.patch
-@ver 5.01.56.00 to 5.01.56.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.57.patch
-@ver 5.01.57.00 to 5.01.57.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.58.patch
-@ver 5.01.58.00 to 5.01.59.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.60.patch
-@ver 5.01.60.00 to 5.01.61.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.62.patch
-@ver 5.01.62.00 to 5.01.64.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.65.patch
-@ver 5.01.65.00 to 5.01.68.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.69.patch
-@ver 5.01.69.00 to 5.01.72.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-@patch 07110_all_mysql_gcc-4.2_5.1.73.patch
-@ver 5.01.73.00 to 5.01.99.99
-@pn mysql
-@@ Replace max() and min() macro with MYSQL_MIN() and MYSQL_MAX()
-@@ FIXME: Testing patch - applies cleanly
-
-
-@patch 07120_all_openssl_handshake_mybug_33050.patch
-@ver 5.00.50.00 to 5.00.54.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Set the connection type for OpenSSL to not break the handshake (upstream bug 33050)
-
-@patch 07130_all_mysqldump-hang-33057_5.0.52.patch
-@ver 5.00.52.00 to 5.00.54.99
-@pn mysql
-@pn mysql-community
-@pn mysql-slotted
-@@ Avoid hang during mysqldump
-
 @patch 07140_all_no-atomic-configure.patch
 @ver 5.00.50.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ No atomic garbage in configure.in
 
 @patch 07150_all_mysql_config_libdir.patch
 @ver 5.00.50.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Do not muck with libdir in mysql_config
 
 @patch 07160_all_flush_priveleges_in_tests.patch
 @ver 5.00.50.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ Flush privileges during some tests to avoid false positives
 
 @patch 07170_all_safe_s390x_stack_size.patch
 @ver 5.00.50.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
-@pn mysql-slotted
 @@ s390x needs a sane stack size
-
-@patch 07190_all_disallow_database_ops_without_super_mybug_27440.patch
-@ver 5.00.51.00 to 5.00.55.99
-@ver 5.01.21.00 to 5.01.22.99
-@pn mysql
-@pn mysql-community
-@@ Fix for read_only allowing create/drop database without SUPER (upstream bug 27440)
 
 @patch 07200_all_libtool_2_2_4.patch
 @ver 4.01.22.00 to 4.01.99.99
 @ver 5.00.50.00 to 5.00.99.99
 @ver 5.01.21.00 to 5.01.22.99
 @pn mysql
-@pn mysql-community
 @@ automake is more strict with libtool-2.2.4
 @@ Gentoo bug 220549
-
-@patch 07210_all_encode_html_entities-5.0.70.patch
-@ver 5.00.45.00 to 5.00.89.99
-@pn mysql
-@pn mysql-community
-@@ Fix CVE-2008-4456 XSS in command line client (Gentoo #240407, MySQL #27884)
-
-@patch 07210_all_encode_html_entities_testcase-5.0.72.patch
-@ver 5.00.72.00 to 5.00.72.99
-@pn mysql
-@pn mysql-community
-@@ Testcase for CVE-2008-4456
-
-@patch 07210_all_encode_html_entities_testcase-5.0.76.patch
-@ver 5.00.76.00 to 5.00.81.99
-@pn mysql
-@pn mysql-community
-@@ Testcase for CVE-2008-4456
 
 @patch 07210_all_encode_html_entities_testcase-5.0.83.patch
 @ver 5.00.82.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
 @@ Testcase for CVE-2008-4456
 
 @patch 07220_all_need_upgraded_grant_tables_for_grant.patch
 @ver 5.00.18.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
 @@ Do not crash on old grant tables when GRANT is called (Gentoo #229329, MySQL #16470)
 
 @patch 07230_all_avoid_bus_error_5.0.76.patch
 @ver 5.00.72.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
 @@ Prevent SIGBUS on Sparc with NDB
 
 @patch 07240_all_as-needed-config-5.0.76.patch
 @ver 5.00.76.00 to 5.00.99.99
 @pn mysql
-@pn mysql-community
 @@ Fix LDFLAGS inclusion in the mysql_config libs output for --as-needed usage.
 
 @patch 07250_all_testcase_latin1_fix-5.1.42.patch
@@ -745,21 +242,6 @@
 @@ Latin1 is assumed by the testsuite even with --with-charset=utf8 
 @@ is passed to configure. Fix information_schema test.
 
-@patch 07270_all_charset_boot_fix-5.1.43.patch
-@ver 5.01.43.00 to 5.01.44.00
-@pn mysql
-@@ Revert charset initialization changes that broke Akonadi.
-
-@patch 07270_all_charset_boot_fix-5.1.44.patch
-@ver 5.01.44.01 to 5.01.44.99
-@pn mysql
-@@ Revert charset initialization changes that broke Akonadi.
-
-@patch 07271_all_charset_init_fix-5.1.44.patch
-@ver 5.01.44.01 to 5.01.44.99
-@pn mysql
-@@ Workaround the pthread_once_t static initialization.
-
 @patch 07280_all_stdbool-5.0.90.patch
 @ver 5.00.84.00 to 5.00.99.99
 @pn mysql
@@ -768,11 +250,6 @@
 @patch 07280_all_stdbool-5.1.44.patch
 @ver 5.01.00.00 to 5.01.99.99
 @pn mysql
-@@ Fix GCC4.4 stdbool requirement.
-
-@patch 07280_all_stdbool-maria-5.1.42.patch
-@ver 5.01.00.00 to 5.01.61.99
-@pn mariadb
 @@ Fix GCC4.4 stdbool requirement.
 
 @patch 07280_all_stdbool-maria-5.1.62.patch
@@ -786,51 +263,11 @@
 @pn mysql-cluster
 @@ Bug #308999: Fix false positives with between OK/"Table is already up to date" output
 
-@patch 07300_all_mysql_embedded_compilefix-5.0.91.patch
-@ver 5.00.91.00 to 5.00.91.99
-@pn mysql
-@@ Compile fix for bug introduced by upstream in 5.0.91
-
-@patch 07310_all_mysql_gcc45-disable-abicheck.patch
-@ver 5.01.00.00 to 5.01.49.99
-@pn mysql
-@@ GCC4.5 fails on the ABI-check block
-
-@patch 07320_all_mysql_mycompiler_header.patch
-@ver 5.01.50.00 to 5.01.50.99
-@pn mysql
-@@ my_compiler.h is not installed, but is required.
-
-@patch 07330_all_mysql_itemfunc_stacksize_bug57386.patch
-@ver 5.01.50.00 to 5.01.55.99
-@pn mysql
-@pn maria
-@pn mysql-cluster
-@@ Bug#57386: Enlarge the stacksize used for trackback.
-
-@patch 07340_all_mysql_hardened_x86_strings.patch
-@ver 5.01.51.00 to 5.01.68.99
-@pn mysql
-@pn mysql-cluster
-@@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
-
-@patch 07340_all_mysql_hardened_x86_strings-5.1.69.patch
-@ver 5.01.69.00 to 5.01.69.99
-@pn mysql
-@pn mysql-cluster
-@@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
-
 @patch 07340_all_mysql_hardened_x86_strings-5.1.70.patch
 @ver 5.01.70.00 to 5.01.99.99
 @pn mysql
 @pn mysql-cluster
 @@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
-
-@patch 07341_all_mysql_hardened_x86_strings.patch
-@ver 5.01.51.00 to 5.01.55.99
-@pn mysql
-@pn mysql-cluster
-@@ Gentoo Bug #344031: Fix new TEXTRELs
 
 @patch 07341_all_mysql-5.1.56_hardened_x86_strings.patch
 @ver 5.01.56.00 to 5.01.99.99
@@ -843,618 +280,120 @@
 @pn mariadb
 @@ Gentoo Bug #344031: Fix new TEXTRELs (remove old strings-x86.s file, for case-insensitive file-systems).
 
-@patch 07341_all_mariadb_hardened_x86_strings.patch
-@ver 5.01.51.00 to 5.01.54.99
-@pn mariadb
-@@ Gentoo Bug #344031: Fix new TEXTRELs
-
 @patch 07341_all_mariadb_5.1.55_hardened_x86_strings.patch
 @ver 5.01.55.00 to 5.01.99.99
 @pn mariadb
 @@ Gentoo Bug #344031: Fix new TEXTRELs
-
-@patch 07342_all_mysql_auth_bypass-5.1.62.patch
-@ver 5.01.62.00 to 5.01.62.99
-@pn mysql
-@@ Upstream bug #64884: auth bypass
 
 @patch 07342_all_mysql_auth_bypass-5.5.22.patch
 @ver 5.05.22.00 to 5.05.22.99
 @pn mysql
 @@ Upstream bug #64884: auth bypass
 
-@patch 10010_all_show_patches-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Patch listing in build data
-
-@patch 10010_all_show_patches-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Patch listing in build data
-
-@patch 10010_all_show_patches-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: SHOW PATCHES
-
-@patch 10010_all_show_patches-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  SHOW PATCHES
-
-@patch 10010_all_show_patches-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  SHOW PATCHES
-
 @patch 10010_all_show_patches-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  SHOW PATCHES
-
-@patch 10020_all_microslow_innodb-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Extended statistics in slow.log
-
-@patch 10020_all_microslow_innodb-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Extended statistics in slow.log
-
-@patch 10020_all_microslow_innodb-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Extended statistics in slow.log
-
-@patch 10020_all_microslow_innodb-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Extended statistics in slow.log
-
-@patch 10020_all_microslow_innodb-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Extended statistics in slow.log
-
-@patch 10020_all_microslow_innodb-percona-5.0.91-b22-20100522.patch
-@ver 5.00.91.00 to 5.00.91.99
-@pn mysql
-@@ Percona 5.0.91-b22-20100522:  Extended statistics in slow.log
 
 @patch 10020_all_microslow_innodb-percona-5.0.92.patch
 @ver 5.00.92.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.92:  Extended statistics in slow.log
 
-@patch 10021_all_profiling_slow-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: profiling from SHOW PROFILE to slow.log
-
-@patch 10021_all_profiling_slow-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  profiling from SHOW PROFILE to slow.log
-
-@patch 10021_all_profiling_slow-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  profiling from SHOW PROFILE to slow.log
-
 @patch 10021_all_profiling_slow-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  profiling from SHOW PROFILE to slow.log
-
-@patch 10030_all_userstatv2-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: SHOW USER/TABLE/INDEX statistics
-
-@patch 10030_all_userstatv2-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: SHOW USER/TABLE/INDEX statistics
-
-@patch 10030_all_userstatv2-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: SHOW USER/TABLE/INDEX statistics
-
-@patch 10030_all_userstatv2-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  SHOW USER/TABLE/INDEX statistics
-
-@patch 10030_all_userstatv2-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  SHOW USER/TABLE/INDEX statistics
-
-@patch 10030_all_userstatv2-percona-5.0.91-b22-20100522.patch
-@ver 5.00.91.00 to 5.00.91.99
-@pn mysql
-@@ Percona 5.0.91-b22-20100522:  SHOW USER/TABLE/INDEX statistics
-
-@patch 10030_all_userstatv2-percona-5.0.92.patch
-@ver 5.00.92.00 to 5.00.95.99
-@pn mysql
-@@ Percona 5.0.92:  SHOW USER/TABLE/INDEX statistics
 
 @patch 10030_all_userstatv2-percona-5.0.96.patch
 @ver 5.00.96.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.96:  SHOW USER/TABLE/INDEX statistics (Gentoo forward-port)
 
-@patch 10040_all_microsec_process-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Adds INFOMATION_SCHEMA.PROCESSLIST with TIME_MS column
-
-@patch 10040_all_microsec_process-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Adds INFOMATION_SCHEMA.PROCESSLIST with TIME_MS column
-
-@patch 10040_all_microsec_process-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Adds INFOMATION_SCHEMA.PROCESSLIST with TIME_MS column
-
-@patch 10040_all_microsec_process-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Adds INFOMATION_SCHEMA.PROCESSLIST with TIME_MS column
-
-@patch 10040_all_microsec_process-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Adds INFOMATION_SCHEMA.PROCESSLIST with TIME_MS column
-
 @patch 10040_all_microsec_process-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Adds INFOMATION_SCHEMA.PROCESSLIST with TIME_MS column
-
-@patch 10050_all_innodb_io_patches-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Cluster of past InnoDB IO patches
-
-@patch 10050_all_innodb_io_patches-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Cluster of past InnoDB IO patches
-
-@patch 10050_all_innodb_io_patches-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Cluster of past InnoDB IO patches
-
-@patch 10050_all_innodb_io_patches-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Cluster of past InnoDB IO patches
-
-@patch 10050_all_innodb_io_patches-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Cluster of past InnoDB IO patches
 
 @patch 10050_all_innodb_io_patches-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Cluster of past InnoDB IO patches
 
-# Disabled, broken.
-#@patch 10060_all_mirror_binlog-percona-5.0.75-b12.patch
-#@ver 5.00.75.00 to 5.00.76.99
-#@pn mysql-community
-#@@ Percona 5.0.75-b12: Mirroring binary logs on slave
-
-# Disabled, broken.
-#@patch 10060_all_mirror_binlog-percona-5.0.77-b13.patch
-#@ver 5.00.77.00 to 5.00.77.99
-#@pn mysql-community
-#@@ Percona 5.0.77-b13: Mirroring binary logs on slave
-
-# Disabled, broken.
-#@patch 10060_all_mirror_binlog-percona-5.0.83-b17-20090706.patch
-#@ver 5.00.83.00 to 5.00.83.99
-#@pn mysql
-#@@ Percona 5.0.83-b17-20090706: Mirroring binary logs on slave
-
-@patch 10070_all_mysqld_safe_syslog-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: allows redirect output of error.log to syslog-ng
-
-@patch 10070_all_mysqld_safe_syslog-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: allows redirect output of error.log to syslog-ng
-
-@patch 10070_all_mysqld_safe_syslog-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Patch allows redirect output of error.log to syslog-ng
-
-@patch 10070_all_mysqld_safe_syslog-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Patch allows redirect output of error.log to syslog-ng
-
-@patch 10070_all_mysqld_safe_syslog-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Patch allows redirect output of error.log to syslog-ng
-
 @patch 10070_all_mysqld_safe_syslog-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Patch allows redirect output of error.log to syslog-ng
-
-@patch 10080_all_innodb_locks_held-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Add locks held, remove locked records in SHOW INNODB STATUS
-
-@patch 10080_all_innodb_locks_held-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Add locks held, remove locked records in SHOW INNODB STATUS
-
-@patch 10080_all_innodb_locks_held-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Add locks held, remove locked records in SHOW INNODB STATUS
-
-@patch 10080_all_innodb_locks_held-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Add locks held, remove locked records in SHOW INNODB STATUS
-
-@patch 10080_all_innodb_locks_held-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Add locks held, remove locked records in SHOW INNODB STATUS
 
 @patch 10080_all_innodb_locks_held-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Add locks held, remove locked records in SHOW INNODB STATUS
 
-@patch 10090_all_innodb_show_bp-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: show innodb buffer pool content
-
-@patch 10090_all_innodb_show_bp-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: show innodb buffer pool content
-
-@patch 10090_all_innodb_show_bp-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: show innodb buffer pool content
-
-@patch 10090_all_innodb_show_bp-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  show innodb buffer pool content
-
-@patch 10090_all_innodb_show_bp-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  show innodb buffer pool content
-
 @patch 10090_all_innodb_show_bp-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  show innodb buffer pool content
-
-@patch 10100_all_innodb_show_hashed_memory-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Adds additional information of InnoDB internal hash table memories in SHOW INNODB STATUS
-
-@patch 10100_all_innodb_show_hashed_memory-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Adds additional information of InnoDB internal hash table memories in SHOW INNODB STATUS
-
-@patch 10110_all_innodb_check_fragmentation-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Session status to check fragmentation of the last InnoDB scan
-
-@patch 10110_all_innodb_check_fragmentation-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Session status to check fragmentation of the last InnoDB scan
-
-@patch 10110_all_innodb_check_fragmentation-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Session status to check fragmentation of the last InnoDB scan
-
-@patch 10110_all_innodb_check_fragmentation-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Session status to check fragmentation of the last InnoDB scan
-
-@patch 10110_all_innodb_check_fragmentation-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Session status to check fragmentation of the last InnoDB scan
 
 @patch 10110_all_innodb_check_fragmentation-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Session status to check fragmentation of the last InnoDB scan
 
-@patch 10120_all_innodb_io_pattern-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Information schema table of InnoDB IO counts for each datafile pages
-
-@patch 10120_all_innodb_io_pattern-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Information schema table of InnoDB IO counts for each datafile pages
-
-@patch 10120_all_innodb_io_pattern-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Information schema table of InnoDB IO counts for each datafile pages
-
-@patch 10120_all_innodb_io_pattern-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Information schema table of InnoDB IO counts for each datafile pages
-
-@patch 10120_all_innodb_io_pattern-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Information schema table of InnoDB IO counts for each datafile pages
-
 @patch 10120_all_innodb_io_pattern-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Information schema table of InnoDB IO counts for each datafile pages
-
-@patch 10130_all_innodb_fsync_source-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Information of fsync callers in InnoDB
-
-@patch 10130_all_innodb_fsync_source-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Information of fsync callers in InnoDB
-
-@patch 10130_all_innodb_fsync_source-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Information of fsync callers in InnoDB
-
-@patch 10130_all_innodb_fsync_source-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Information of fsync callers in InnoDB
-
-@patch 10130_all_innodb_fsync_source-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Information of fsync callers in InnoDB
 
 @patch 10130_all_innodb_fsync_source-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Information of fsync callers in InnoDB
 
-@patch 10139_all_innodb_show_hashed_memory-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Adds additional information of InnoDB internal hash table memories in SHOW INNODB STATUS
-
-@patch 10139_all_innodb_show_hashed_memory-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Adds additional information of InnoDB internal hash table memories in SHOW INNODB STATUS
-
-@patch 10139_all_innodb_show_hashed_memory-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Adds additional information of InnoDB internal hash table memories in SHOW INNODB STATUS
-
 @patch 10139_all_innodb_show_hashed_memory-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Adds additional information of InnoDB internal hash table memories in SHOW INNODB STATUS
-
-@patch 10140_all_innodb_dict_size_limit-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Variable innodb_dict_size_limit in bytes
-
-@patch 10140_all_innodb_dict_size_limit-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Limit dictionary cache size
-
-@patch 10140_all_innodb_dict_size_limit-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Limit dictionary cache size
-
-@patch 10140_all_innodb_dict_size_limit-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Limit dictionary cache size
 
 @patch 10140_all_innodb_dict_size_limit-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Limit dictionary cache size
 
-@patch 10160_all_innodb_extra_rseg-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: allow to create extra rollback segments
-
-@patch 10160_all_innodb_extra_rseg-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  allow to create extra rollback segments
-
-@patch 10160_all_innodb_extra_rseg-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  allow to create extra rollback segments
-
 @patch 10160_all_innodb_extra_rseg-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  allow to create extra rollback segments
-
-@patch 10170_all_innodb_thread_concurrency_timer_based-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Use InnoDB timer based concurrency throttling (backport from MySQL 5.4.0)
-
-@patch 10170_all_innodb_thread_concurrency_timer_based-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Use InnoDB timer based concurrency throttling (backport from MySQL 5.4.0)
-
-@patch 10170_all_innodb_thread_concurrency_timer_based-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Use InnoDB timer based concurrency throttling (backport from MySQL 5.4.0)
 
 @patch 10170_all_innodb_thread_concurrency_timer_based-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Use InnoDB timer based concurrency throttling (backport from MySQL 5.4.0)
 
-@patch 10200_all_mysql-test-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Fix some testcases
-
-@patch 10200_all_mysql-test-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811: 
-
-@patch 10200_all_mysql-test-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116: 
-
 @patch 10200_all_mysql-test-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522: 
-
-@patch 10500_all_innodb_use_sys_malloc-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  InnoDB uses malloc directly (backport from InnoDB-Plugin)
-
-@patch 10500_all_innodb_use_sys_malloc-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  InnoDB uses malloc directly (backport from InnoDB-Plugin)
 
 @patch 10500_all_innodb_use_sys_malloc-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  InnoDB uses malloc directly (backport from InnoDB-Plugin)
 
-@patch 10510_all_innodb_recovery_patches-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Bugfixes and adjustments about recovery process
-
-@patch 10510_all_innodb_recovery_patches-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Bugfixes and adjustments about recovery process
-
 @patch 10510_all_innodb_recovery_patches-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Bugfixes and adjustments about recovery process
-
-@patch 10511_all_innodb_misc_patch-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Identifies if thread is running a SELECT
 
 @patch 10511_all_innodb_misc_patch-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  Identifies if thread is running a SELECT
 
-@patch 10520_all_innodb_split_buf_pool_mutex-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  InnoDB patch to fix buffer pool scalability
-
-@patch 10520_all_innodb_split_buf_pool_mutex-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  InnoDB patch to fix buffer pool scalability
-
 @patch 10520_all_innodb_split_buf_pool_mutex-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
 @pn mysql
 @@ Percona 5.0.91-b22-20100522:  InnoDB patch to fix buffer pool scalability
-
-@patch 11000_all_split_buf_pool_mutex_fixed_optimistic_safe-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: InnoDB patch to fix buffer pool scalability
-
-@patch 11000_all_split_buf_pool_mutex_fixed_optimistic_safe-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: InnoDB patch to fix buffer pool scalability
-
-@patch 11000_all_split_buf_pool_mutex_fixed_optimistic_safe-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: InnoDB patch to fix buffer pool scalability
-
-@patch 11010_all_innodb_rw_lock-percona-5.0.75-b12.patch
-@ver 5.00.75.00 to 5.00.76.99
-@pn mysql-community
-@@ Percona 5.0.75-b12: Fix of InnoDB rw_locks
-
-@patch 11010_all_innodb_rw_lock-percona-5.0.77-b13.patch
-@ver 5.00.77.00 to 5.00.77.99
-@pn mysql-community
-@@ Percona 5.0.77-b13: Fix of InnoDB rw_locks
-
-@patch 11010_all_innodb_rw_lock-percona-5.0.83-b17-20090706.patch
-@ver 5.00.83.00 to 5.00.83.99
-@pn mysql
-@@ Percona 5.0.83-b17-20090706: Fix of InnoDB rw_locks
-
-@patch 11010_all_innodb_rw_lock-percona-5.0.84-b18-20090811.patch
-@ver 5.00.84.00 to 5.00.84.99
-@pn mysql
-@@ Percona 5.0.84-b18-20090811:  Fix of InnoDB rw_locks
-
-@patch 11010_all_innodb_rw_lock-percona-5.0.87-b20-20091116.patch
-@ver 5.00.87.00 to 5.00.90.99
-@pn mysql
-@@ Percona 5.0.87-b20-20091116:  Fix of InnoDB rw_locks
 
 @patch 11010_all_innodb_rw_lock-percona-5.0.91-b22-20100522.patch
 @ver 5.00.91.00 to 5.00.99.99
@@ -1464,13 +403,7 @@
 @patch 15000_all_mysql_gcc-4.4_5.0.77.patch
 @ver 5.00.77.00 to 5.00.90.99
 @pn mysql
-@pn mysql-community
 @@ GCC4.4 Fixup for Percona Patch
-
-@patch 15000_all_mariadb_libevent-system_5.1.42.patch
-@ver 5.01.39.00 to 5.01.42.99
-@pn mariadb
-@@ Clean up libevent autoconf usage
 
 @patch 15010_all_innodb_show_bp-fixes-5.0.91.patch
 @ver 5.00.87.00 to 5.00.99.99
@@ -1559,26 +492,6 @@
 @pn mariadb-galera
 @@ Fix the minimal build by reordering CMakeLists.txt
 @@ Fixes MDEV-6562
-
-@patch 21000_all_sql-5.1.62.patch
-@ver 5.01.62.00 to 5.01.64.99
-@pn mariadb
-@@ Fix sql
-
-@patch 21000_all_sql-5.2.12.patch
-@ver 5.02.12.00 to 5.02.12.99
-@pn mariadb
-@@ Fix sql
-
-@patch 21000_all_sql-5.3.7.patch
-@ver 5.03.07.00 to 5.03.07.99
-@pn mariadb
-@@ Fix sql
-
-@patch 21000_all_sql-5.5.25.patch
-@ver 5.05.25.00 to 5.05.26.99
-@pn mariadb
-@@ Fix sql
 
 @patch 20002_all_mysql-va-list.patch
 @ver 5.05.00.00 to 5.05.99.99
