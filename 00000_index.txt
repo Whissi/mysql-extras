@@ -532,16 +532,27 @@
 @@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
 
 @patch 20004_all_mariadb-filter-tokudb-flags-10.0.7.patch
-@ver 10.00.07.00 to 10.01.08.99
+@ver 10.00.07.00 to 10.00.22.99
+@ver 10.01.00.00 to 10.01.08.99
+@pn mariadb
+@pn mariadb-galera
+@@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
+
+@patch 20004_all_mariadb-filter-tokudb-flags-10.0.23.patch
+@ver 10.00.23.00 to 10.00.99.99
 @pn mariadb
 @pn mariadb-galera
 @@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
 
 @patch 20004_all_mariadb-filter-tokudb-flags-10.1.9.patch
-@ver 10.01.09.00 to 10.99.99.99
+@ver 10.01.09.00 to 10.01.09.99
 @pn mariadb
-@pn mariadb-galera
-@@ Filter out -flto -fuse-linker-plugin -g and -Werror for tokudb
+@@ Filter out -g and -Werror for tokudb
+
+@patch 20004_all_mariadb-filter-tokudb-flags-10.1.10.patch
+@ver 10.01.10.00 to 10.01.99.99
+@pn mariadb
+@@ Filter out -g and -Werror for tokudb
 
 @patch 20005_all_mysql-unittest-5.1.73.patch
 @ver 5.01.73.00 to 5.01.99.99
