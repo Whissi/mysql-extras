@@ -1,0 +1,12 @@
+diff -aurN a/libmysql/CMakeLists.txt b/libmysql/CMakeLists.txt
+--- a/libmysql/CMakeLists.txt	2015-02-26 09:51:43.000000000 -0500
++++ b/libmysql/CMakeLists.txt	2015-03-10 10:47:52.759629219 -0400
+@@ -155,6 +155,8 @@
+ # will have a FR to replace this for decent name/functionality and document it.
+ my_load_defaults
+ handle_options
++dynstr_append_os_quoted
++strfill
+ 
+ CACHE INTERNAL "Undocumented Functions exported by client API"
+ 
