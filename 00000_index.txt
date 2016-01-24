@@ -934,3 +934,9 @@
 @ver 10.01.11.00 to 10.01.11.99
 @pn mariadb
 @@ Fix server gssapi plugin compile with heimdal
+
+@patch 50001_all_percona-server-5.6-ctype_ucs-bug-1534246.patch
+@ver 5.06.00.00 to 5.06.28.76.01
+@pn percona-server
+@@ Fix ctype_ucs test
+@@ Bug 572754 Upstream bug 1534246
