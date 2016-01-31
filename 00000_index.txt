@@ -923,3 +923,8 @@
 @@ Fix events_1 test for October 2015
 @@ Patch backported from mariadb
 @@ Bug 564968 Upstream bug 78899
+
+@patch 20021_all_mariadb-10.1.11-kerberos-MDEV-9494
+@ver 10.01.11.00 to 10.01.11.99
+@pn mariadb
+@@ Fix server gssapi plugin compile with heimdal
