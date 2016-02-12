@@ -194,10 +194,10 @@ diff -aurN mysql.old/scripts/mysql_config.sh mysql/scripts/mysql_config.sh
  pkgincludedir='@pkgincludedir@'
  if [ -f "$basedir/include/mysql/mysql.h" ]; then
    pkgincludedir="$basedir/include/mysql"
-@@ -113,7 +117,7 @@
+@@ -116,7 +116,7 @@
  libs="$libs @QUOTED_CMAKE_C_LINK_FLAGS@"
  libs_r=" $ldflags -L$pkglibdir @RPATH_OPTION@ -lmysqlclient @ZLIB_DEPS@ @CLIENT_LIBS@ @openssl_libs@ "
- libs_r="$libs @QUOTED_CMAKE_C_LINK_FLAGS@"
+ libs_r="$libs_r @QUOTED_CMAKE_C_LINK_FLAGS@"
 -embedded_libs=" $ldflags -L$pkglibdir @RPATH_OPTION@ -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
 +embedded_libs=" $ldflags -L$elibdir @RPATH_OPTION@ -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
  embedded_libs="$embedded_libs @QUOTED_CMAKE_CXX_LINK_FLAGS@"
