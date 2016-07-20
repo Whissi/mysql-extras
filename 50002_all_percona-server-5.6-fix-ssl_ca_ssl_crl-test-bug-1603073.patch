@@ -1,0 +1,104 @@
+From 84bcfd8eed24661d1852d33229716943aeef0c2b Mon Sep 17 00:00:00 2001
+From: Laurynas Biveinis <laurynas.biveinis@gmail.com>
+Date: Thu, 14 Jul 2016 17:06:03 +0300
+Subject: [PATCH] Fix bug 1603073 (ssl_ca and ssl_crl test failures)
+
+5.6.31 upstream merge has introduced new testcases, ssl_ca and ssl_crl,
+which haveto be adjusted for the recent TLSv1.2 changes.  Make the
+testcases accept both YaSSL and OpenSSL whitelisted default ciphers.
+---
+ mysql-test/r/ssl_ca.result  | 8 ++++----
+ mysql-test/r/ssl_crl.result | 4 ++--
+ mysql-test/t/ssl_ca.test    | 4 ++++
+ mysql-test/t/ssl_crl.test   | 4 ++--
+ 4 files changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/mysql-test/r/ssl_ca.result b/mysql-test/r/ssl_ca.result
+index ffc5671..818d05e 100644
+--- a/mysql-test/r/ssl_ca.result
++++ b/mysql-test/r/ssl_ca.result
+@@ -5,7 +5,7 @@
+ ERROR 2026 (HY000): SSL connection error: SSL_CTX_set_default_verify_paths failed
+ # try to connect with correct '--ssl-ca' path : should connect
+ Variable_name	Value
+-Ssl_cipher	DHE-RSA-AES256-SHA
++Ssl_cipher	SSL_CIPHER
+ #
+ # Bug#21920678: SSL-CA DOES NOT ACCEPT ~USER TILDE HOME DIRECTORY
+ #               PATH SUBSTITUTION
+@@ -13,12 +13,12 @@ Ssl_cipher	DHE-RSA-AES256-SHA
+ # try to connect with '--ssl-ca' option using tilde home directoy
+ # path substitution : should connect
+ Variable_name	Value
+-Ssl_cipher	DHE-RSA-AES256-SHA
++Ssl_cipher	SSL_CIPHER
+ # try to connect with '--ssl-key' option using tilde home directoy
+ # path substitution : should connect
+ Variable_name	Value
+-Ssl_cipher	DHE-RSA-AES256-SHA
++Ssl_cipher	SSL_CIPHER
+ # try to connect with '--ssl-cert' option using tilde home directoy
+ # path substitution : should connect
+ Variable_name	Value
+-Ssl_cipher	DHE-RSA-AES256-SHA
++Ssl_cipher	SSL_CIPHER
+diff --git a/mysql-test/r/ssl_crl.result b/mysql-test/r/ssl_crl.result
+index c9b4796..08b47ec 100644
+--- a/mysql-test/r/ssl_crl.result
++++ b/mysql-test/r/ssl_crl.result
+@@ -28,8 +28,8 @@ ssl_key	MYSQL_TEST_DIR/std_data/crl-server-key.pem
+ # try to connect with '--ssl-crl' option using tilde home directoy
+ # path substitution : should connect
+ Variable_name	Value
+-Ssl_cipher	DHE-RSA-AES256-SHA
++Ssl_cipher	SSL_CIPHER
+ # try to connect with '--ssl-crlpath' option using tilde home directoy
+ # path substitution : should connect
+ Variable_name	Value
+-Ssl_cipher	DHE-RSA-AES256-SHA
++Ssl_cipher	SSL_CIPHER
+diff --git a/mysql-test/t/ssl_ca.test b/mysql-test/t/ssl_ca.test
+index bc6ef55..52f4cf8 100644
+--- a/mysql-test/t/ssl_ca.test
++++ b/mysql-test/t/ssl_ca.test
+@@ -10,6 +10,7 @@
+ --exec $MYSQL --ssl-ca=$MYSQL_TEST_DIR/std_data/wrong-crl-ca-cert.pem --ssl-key=$MYSQL_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYSQL_TEST_DIR/std_data/crl-client-cert.pem test -e "SHOW STATUS LIKE 'Ssl_cipher'" 2>&1
+ 
+ --echo # try to connect with correct '--ssl-ca' path : should connect
++--replace_result DHE-RSA-AES128-GCM-SHA256 SSL_CIPHER DHE-RSA-AES256-SHA SSL_CIPHER DHE-RSA-AES128-SHA SSL_CIPHER
+ --exec $MYSQL --ssl-ca=$MYSQL_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYSQL_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYSQL_TEST_DIR/std_data/crl-client-cert.pem test -e "SHOW STATUS LIKE 'Ssl_cipher'"
+ 
+ --echo #
+@@ -21,12 +22,15 @@
+ 
+ --echo # try to connect with '--ssl-ca' option using tilde home directoy
+ --echo # path substitution : should connect
++--replace_result DHE-RSA-AES128-GCM-SHA256 SSL_CIPHER DHE-RSA-AES256-SHA SSL_CIPHER DHE-RSA-AES128-SHA SSL_CIPHER
+ --exec $MYSQL --ssl-ca=$mysql_test_dir_path/std_data/crl-ca-cert.pem --ssl-key=$MYSQL_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYSQL_TEST_DIR/std_data/crl-client-cert.pem test -e "SHOW STATUS LIKE 'Ssl_cipher'"
+ 
+ --echo # try to connect with '--ssl-key' option using tilde home directoy
+ --echo # path substitution : should connect
++--replace_result DHE-RSA-AES128-GCM-SHA256 SSL_CIPHER DHE-RSA-AES256-SHA SSL_CIPHER DHE-RSA-AES128-SHA SSL_CIPHER
+ --exec $MYSQL --ssl-ca=$MYSQL_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$mysql_test_dir_path/std_data/crl-client-key.pem --ssl-cert=$MYSQL_TEST_DIR/std_data/crl-client-cert.pem test -e "SHOW STATUS LIKE 'Ssl_cipher'"
+ 
+ --echo # try to connect with '--ssl-cert' option using tilde home directoy
+ --echo # path substitution : should connect
++--replace_result DHE-RSA-AES128-GCM-SHA256 SSL_CIPHER DHE-RSA-AES256-SHA SSL_CIPHER DHE-RSA-AES128-SHA SSL_CIPHER
+ --exec $MYSQL --ssl-ca=$MYSQL_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYSQL_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$mysql_test_dir_path/std_data/crl-client-cert.pem test -e "SHOW STATUS LIKE 'Ssl_cipher'"
+diff --git a/mysql-test/t/ssl_crl.test b/mysql-test/t/ssl_crl.test
+index 81da28a..e4c4228 100644
+--- a/mysql-test/t/ssl_crl.test
++++ b/mysql-test/t/ssl_crl.test
+@@ -31,10 +31,10 @@ if (!$crllen)
+ 
+ --echo # try to connect with '--ssl-crl' option using tilde home directoy
+ --echo # path substitution : should connect
+---replace_result $MYSQL_TEST_DIR MYSQL_TEST_DIR
++--replace_result $MYSQL_TEST_DIR MYSQL_TEST_DIR DHE-RSA-AES128-GCM-SHA256 SSL_CIPHER DHE-RSA-AES256-SHA SSL_CIPHER DHE-RSA-AES128-SHA SSL_CIPHER
+ --exec $MYSQL --ssl-ca=$MYSQL_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYSQL_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYSQL_TEST_DIR/std_data/crl-client-cert.pem test --ssl-crl=$mysql_test_dir_path/std_data/crl-client-revoked.crl -e "SHOW STATUS LIKE 'Ssl_cipher'"
+ 
+ --echo # try to connect with '--ssl-crlpath' option using tilde home directoy
+ --echo # path substitution : should connect
+---replace_result $MYSQL_TEST_DIR MYSQL_TEST_DIR
++--replace_result $MYSQL_TEST_DIR MYSQL_TEST_DIR DHE-RSA-AES128-GCM-SHA256 SSL_CIPHER DHE-RSA-AES256-SHA SSL_CIPHER DHE-RSA-AES128-SHA SSL_CIPHER
+ --exec $MYSQL --ssl-ca=$MYSQL_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYSQL_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYSQL_TEST_DIR/std_data/crl-client-cert.pem --ssl-crlpath=$mysql_test_dir_path/std_data/crldir test -e "SHOW STATUS LIKE 'Ssl_cipher'"

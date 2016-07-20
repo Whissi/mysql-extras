@@ -940,3 +940,9 @@
 @pn percona-server
 @@ Fix ctype_ucs test
 @@ Bug 572754 Upstream bug 1534246
+
+@patch 50002_all_percona-server-5.6-fix-ssl_ca_ssl_crl-test-bug-1603073.patch
+@ver 5.06.31.77.00 to 5.06.31.77.01
+@pn percona-server
+@@ Fix ctype_ucs test
+@@ Upstream bug 1603073
